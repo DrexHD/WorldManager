@@ -24,7 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.portal.DimensionTransition;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
@@ -139,8 +139,9 @@ public class WorldManagerCommand {
             throw UNKNOWN_WORLD.create();
         }
 
-        TeleportTransition teleportTransition = TeleportTransition.missingRespawnBlock(serverLevel, player, TeleportTransition.DO_NOTHING);
-        player.teleport(teleportTransition);
+        DimensionTransition teleportTransition = DimensionTransition.missingRespawnBlock(serverLevel, player, DimensionTransition.DO_NOTHING);
+        var pos = teleportTransition.pos();
+        player.teleportTo(teleportTransition.newLevel(), pos.x, pos.y, pos.z, teleportTransition.yRot(), teleportTransition.xRot());
         source.sendSuccess(() -> builder("worldmanager.command.teleport").addPlaceholder("id", id.toString()).build(), false);
         return 1;
     }
