@@ -2,7 +2,7 @@ plugins {
     id("dev.kikugie.stonecutter")
     id("org.jetbrains.changelog") version "2.2.1"
 }
-stonecutter active "1.21.6"
+stonecutter active "1.21.8"
 
 stonecutter registerChiseled tasks.register("chiseledBuild", stonecutter.chiseled) { 
     group = "project"
