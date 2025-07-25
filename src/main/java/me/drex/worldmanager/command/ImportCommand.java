@@ -7,6 +7,8 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.datafixers.DataFixer;
+import com.mojang.serialization.Dynamic;
 import me.drex.worldmanager.WorldManager;
 import me.drex.worldmanager.extractor.*;
 import me.drex.worldmanager.gui.ImportWorld;
@@ -22,14 +24,13 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -134,28 +135,31 @@ public class ImportCommand {
     //? if >= 1.21.5 {
     public static Optional<WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
-        return tag.getCompound("Data")
-            .flatMap(data -> {
-                var spawnX = data.getIntOr("SpawnX", 0);
-                var spawnY = data.getIntOr("SpawnY", 0);
-                var spawnZ = data.getIntOr("SpawnZ", 0);
-                var spawnAngle = data.getFloatOr("SpawnAngle", 0);
-                return data.getCompound("WorldGenSettings")
-                    .flatMap(worldGenSettings -> {
-                        long seed = worldGenSettings.getLongOr("seed", 0);
-                        return worldGenSettings.getCompound("dimensions")
-                            // TODO add option to pick dimension
-                            .flatMap(dimensions -> dimensions.getCompound("minecraft:overworld")
-                                .flatMap(overworld -> {
-                                    return createWorldConfig(server, overworld, spawnX, spawnY, spawnZ, spawnAngle, seed);
-                                }));
-                    });
+
+        Optional<CompoundTag> unfixedData = tag.getCompound("Data");
+        if (unfixedData.isEmpty()) return Optional.empty();
+        CompoundTag data = fixLevelData(unfixedData.get()).orElse(unfixedData.get());
+
+        var spawnX = data.getIntOr("SpawnX", 0);
+        var spawnY = data.getIntOr("SpawnY", 0);
+        var spawnZ = data.getIntOr("SpawnZ", 0);
+        var spawnAngle = data.getFloatOr("SpawnAngle", 0);
+        return data.getCompound("WorldGenSettings")
+            .flatMap(worldGenSettings -> {
+                long seed = worldGenSettings.getLongOr("seed", 0);
+                return worldGenSettings.getCompound("dimensions")
+                    // TODO add option to pick dimension
+                    .flatMap(dimensions -> dimensions.getCompound("minecraft:overworld")
+                        .flatMap(overworld -> {
+                            return createWorldConfig(server, overworld, spawnX, spawnY, spawnZ, spawnAngle, seed);
+                        }));
             });
     }
     //?} else {
     /*public static Optional<WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
-        var data = tag.getCompound("Data");
+        var unfixedData = tag.getCompound("Data");
+        var data = fixLevelData(unfixedData).orElse(unfixedData);
 
         var spawnX = data.getInt("SpawnX");
         var spawnY = data.getInt("SpawnY");
@@ -168,6 +172,21 @@ public class ImportCommand {
         return createWorldConfig(server, overworld, spawnX, spawnY, spawnZ, spawnAngle, seed);
     }
     *///?}
+
+    public static Optional<CompoundTag> fixLevelData(CompoundTag levelData) {
+        int dataVersion = NbtUtils.getDataVersion(levelData, -1);
+        DataFixer dataFixer = DataFixers.getDataFixer();
+
+        Dynamic<Tag> dynamic = DataFixTypes.LEVEL.updateToCurrentVersion(dataFixer, new Dynamic<>(NbtOps.INSTANCE, levelData), dataVersion)
+            .update("Player", playerDynamic ->
+                DataFixTypes.PLAYER.updateToCurrentVersion(dataFixer, playerDynamic, dataVersion))
+            .update("WorldGenSettings", worldGenDynamic ->
+                DataFixTypes.WORLD_GEN_SETTINGS.updateToCurrentVersion(dataFixer, worldGenDynamic, dataVersion));
+
+        return dynamic.getValue() instanceof CompoundTag compoundTag ?
+            Optional.of(compoundTag) :
+            Optional.empty();
+    }
 
     private static Optional<WorldConfig> createWorldConfig(MinecraftServer server, CompoundTag overworld, int spawnX, int spawnY, int spawnZ, float spawnAngle, long seed) {
         try {
