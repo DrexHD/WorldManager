@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.5] - 2025-07-25
+### Changed
+- Improve world loading for old worlds (@chililisoup)
+
 ## [1.3.4] - 2025-07-24
 ### Fixed
-- NullPointerException when importing worlds with `level.dat` in an archive top level (chililisoup)
+- NullPointerException when importing worlds with `level.dat` in an archive top level (@chililisoup)
 
 ## [1.3.3] - 2025-06-25
 ### Fixed
