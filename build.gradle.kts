@@ -59,9 +59,6 @@ dependencies {
     includeMod("eu.pb4:placeholder-api:${findProperty("placeholder_api_version")}")
     includeMod("eu.pb4:player-data-api:${findProperty("player_data_api_version")}")
 
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${findProperty("mixin_extras_version")}")!!)
-    include("io.github.llamalad7:mixinextras-fabric:${findProperty("mixin_extras_version")}:slim")
-
     includeDep("com.github.junrar:junrar:${findProperty("junrar_version")}")
     includeDep("org.apache.commons:commons-compress:${findProperty("apache_common_compress_version")}")
 }

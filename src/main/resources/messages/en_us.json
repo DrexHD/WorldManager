@@ -51,7 +51,7 @@
   "worldmanager.gui.configure.seed.name": "<light_purple>Configure World Seed",
   "worldmanager.gui.configure.seed.lore": "<gray>Current: <gold>${seed}",
   "worldmanager.gui.configure.generator.name": "<green>Configure Chunk Generator",
-  "worldmanager.gui.configure.generator.lore": "<gray>How the world is shaped\n\nCurrent:\n${generator_full}",
+  "worldmanager.gui.configure.generator.lore": "<gray>How the world is shaped\n\nCurrent:\n${generator}",
   "worldmanager.gui.configure.tick_time.name": "<aqua>Time Ticking",
   "worldmanager.gui.configure.tick_time.lore": "<gray>Enable / disable daylight cycle\n\nCurrent: <gold>${tick_time}",
   "worldmanager.gui.configure.confirm.name": "<green><bold>Confirm!",

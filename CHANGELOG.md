@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.6] - 2025-08-08
+### Fixed
+- Create world gui not working with certain setups
+
 ## [1.3.5] - 2025-07-25
 ### Changed
 - Improve world loading for old worlds (@chililisoup)
