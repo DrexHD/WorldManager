@@ -64,7 +64,7 @@ public class TeleportCommand {
 
     public static boolean teleport(ServerPlayer player, WorldConfig config, ResourceLocation id) {
         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
-        ServerLevel serverLevel = player.getServer().getLevel(resourceKey);
+        ServerLevel serverLevel = player.level().getServer().getLevel(resourceKey);
         if (serverLevel == null) return false;
 
         if (player.level() == serverLevel) return false;

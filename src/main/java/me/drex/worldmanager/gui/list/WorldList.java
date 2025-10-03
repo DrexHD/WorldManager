@@ -25,7 +25,7 @@ public class WorldList extends PagedGui<Map.Entry<ResourceLocation, WorldConfig>
 
     @Override
     protected List<Map.Entry<ResourceLocation, WorldConfig>> elements() {
-        return WorldManagerSavedData.getSavedData(player.getServer()).getWorlds().entrySet().stream().toList();
+        return WorldManagerSavedData.getSavedData(player.level().getServer()).getWorlds().entrySet().stream().toList();
     }
 
     @Override

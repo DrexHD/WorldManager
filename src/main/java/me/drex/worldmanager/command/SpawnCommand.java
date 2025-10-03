@@ -61,7 +61,7 @@ public class SpawnCommand {
 
     public static boolean spawn(ServerPlayer player, WorldConfig config, ResourceLocation id) {
         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
-        ServerLevel serverLevel = player.getServer().getLevel(resourceKey);
+        ServerLevel serverLevel = player.level().getServer().getLevel(resourceKey);
         if (serverLevel == null) return false;
 
         var spawnLocation = Optional.<Location>empty();

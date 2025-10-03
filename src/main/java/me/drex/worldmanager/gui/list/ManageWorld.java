@@ -62,7 +62,7 @@ public class ManageWorld extends SimpleGui {
                         if (!item.isEmpty()) {
                             config.data.icon = item;
                         }
-                        WorldManagerSavedData.getSavedData(player.getServer()).setDirty();
+                        WorldManagerSavedData.getSavedData(player.level().getServer()).setDirty();
                         build();
                     }
                 })
@@ -73,7 +73,7 @@ public class ManageWorld extends SimpleGui {
                 .setCallback(() -> {
                     if (Permissions.check(player, "worldmanager.command.worldmanager.delete", 2)) {
                         new ConfirmTypeGui(player, id.toString(), () -> {
-                            WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(player.getServer());
+                            WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(player.level().getServer());
                             if (savedData.removeWorld(id)) {
                                 close();
                             } else {

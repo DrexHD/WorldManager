@@ -43,7 +43,7 @@ public abstract class ConfigureWorld extends SimpleGui {
         super(MenuType.GENERIC_9x3, player, false);
         this.id = id;
         setTitle(LocalizedMessage.builder("worldmanager.gui.configure.title").addPlaceholder("id", id.toString()).build());
-        setupDefaults(player.getServer());
+        setupDefaults(player.level().getServer());
         build();
     }
 

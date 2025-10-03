@@ -17,7 +17,7 @@ public class ImportWorld extends ConfigureWorld {
 
     @Override
     protected void confirm(WorldConfig config) {
-        var server = player.getServer();
+        var server = player.level().getServer();
         Fantasy fantasy = Fantasy.get(server);
 
         RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(id, config.toRuntimeWorldConfig());

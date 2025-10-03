@@ -1,7 +1,9 @@
 package me.drex.worldmanager.save;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.PlayerRespawnLogic;
+//? if <= 1.21.8 {
+//import net.minecraft.server.level.PlayerRespawnLogic;
+//? }
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
@@ -13,7 +15,7 @@ import java.util.Collections;
 public record WorldLocation(ServerLevel level, Location location) {
     public static WorldLocation findSpawn(ServerLevel level, Entity entity) {
         //? if >= 1.21 {
-        Vec3 vec3 = entity.adjustSpawnLocation(level, level.getSharedSpawnPos()).getBottomCenter();
+        Vec3 vec3 = entity.adjustSpawnLocation(level, level./*? if >= 1.21.9 {*/getRespawnData().pos() /*? } else {*/ /*getSharedSpawnPos()*/ /*?}*/).getBottomCenter();
         return new WorldLocation(level, new Location(vec3, Vec2.ZERO));
         //?} else {
         /*BlockPos spawnPos = level.getSharedSpawnPos();

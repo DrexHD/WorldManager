@@ -28,7 +28,7 @@ public class ManageCommand {
     }
 
     public static int manage(ServerPlayer player, ResourceLocation id) throws CommandSyntaxException {
-        WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(player.getServer());
+        WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(player.level().getServer());
         WorldConfig config = savedData.getConfig(id);
         if (config == null) {
             throw UNKNOWN_WORLD.create();
