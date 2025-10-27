@@ -8,6 +8,7 @@
   "mixins": [
     "ExecuteCommandMixin",
     "MinecraftServerAccessor",
+    "MinecraftServerMixin",
     "ServerPlayerMixin"
   ],
   "injectors": {
