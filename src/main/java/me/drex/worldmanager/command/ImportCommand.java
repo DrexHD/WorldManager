@@ -118,6 +118,7 @@ public class ImportCommand {
             }
             config = extractor.get().extract(fullPath, targetPath, server);
         } catch (IOException e) {
+            WorldManager.LOGGER.error("Failed to extract world", e);
             throw IO_EXCEPTION.create(fullPath);
         }
         if (customConfig) {
