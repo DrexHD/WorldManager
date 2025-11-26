@@ -1,9 +1,11 @@
 package me.drex.worldmanager.gui;
 
-import me.drex.message.api.LocalizedMessage;
 import me.drex.worldmanager.gui.configure.ConfigureWorld;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
+import me.drex.worldmanager.util.VersionUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -23,6 +25,12 @@ public class CreateWorld extends ConfigureWorld {
 
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
         savedData.addWorld(id, config, handle);
-        player.sendSystemMessage(LocalizedMessage.builder("worldmanager.command.create").addPlaceholder("id", id.toString()).build());
+        player.sendSystemMessage(Component.empty()
+            .append(Component.literal("World " + id + " has been created successfully. "))
+            .append(Component.literal("Click to teleport!").withStyle(style ->
+                    style.withColor(ChatFormatting.AQUA).withUnderlined(true)
+                        .withClickEvent(VersionUtil.runCommand("/wm tp " + id))
+                )
+            ));
     }
 }

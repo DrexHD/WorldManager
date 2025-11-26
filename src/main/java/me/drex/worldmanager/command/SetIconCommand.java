@@ -2,8 +2,6 @@ package me.drex.worldmanager.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.drex.message.api.LocalizedMessage;
-import me.drex.worldmanager.save.Location;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -12,15 +10,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.commands.arguments.item.ItemInput;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-
-import java.util.Optional;
 
 import static me.drex.worldmanager.command.WorldManagerCommand.UNKNOWN_WORLD;
 import static me.drex.worldmanager.command.WorldManagerCommand.WORLD_SUGGESTIONS;
@@ -52,10 +45,7 @@ public class SetIconCommand {
         config.data.icon = icon;
         savedData.setDirty();
 
-        source.sendSuccess(() -> LocalizedMessage.builder("worldmanager.command.seticon")
-            .addPlaceholder("id", id.toString())
-            .addPlaceholder("icon", icon.getDisplayName())
-            .build(), false);
+        source.sendSuccess(() -> Component.literal("Set world icon for " + id + " to ").append(icon.getDisplayName()), false);
         return 1;
     }
 }

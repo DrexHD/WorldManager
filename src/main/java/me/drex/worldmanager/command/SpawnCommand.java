@@ -11,6 +11,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -22,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static me.drex.message.api.LocalizedMessage.builder;
 import static me.drex.worldmanager.command.WorldManagerCommand.UNKNOWN_WORLD;
 import static me.drex.worldmanager.command.WorldManagerCommand.WORLD_SUGGESTIONS;
 import static net.minecraft.commands.Commands.argument;
@@ -55,7 +55,7 @@ public class SpawnCommand {
         for (ServerPlayer player : targets) {
             spawn(player, config, id);
         }
-        source.sendSuccess(() -> builder("worldmanager.command.spawn").addPlaceholder("id", id.toString()).build(), false);
+        source.sendSuccess(() -> Component.literal("Teleporting to world spawn of " + id), false);
         return 1;
     }
 

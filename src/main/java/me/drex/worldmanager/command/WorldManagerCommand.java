@@ -8,9 +8,9 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 
-import static me.drex.message.api.LocalizedMessage.localized;
 import static net.minecraft.commands.Commands.literal;
 
 public class WorldManagerCommand {
@@ -25,7 +25,8 @@ public class WorldManagerCommand {
             WorldManagerSavedData.getSavedData(context.getSource().getServer()).getWorlds().keySet(), builder
         );
 
-    public static final SimpleCommandExceptionType UNKNOWN_WORLD = new SimpleCommandExceptionType(localized("worldmanager.command.exception.unknown_world"));
+    public static final SimpleCommandExceptionType UNKNOWN_WORLD = new SimpleCommandExceptionType(Component.literal("Unknown world id!"));
+    public static final SimpleCommandExceptionType ALREADY_EXISTS = new SimpleCommandExceptionType(Component.literal("A world with that id already exists!"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext) {
         var root = dispatcher.register(

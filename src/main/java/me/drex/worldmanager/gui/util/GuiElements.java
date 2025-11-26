@@ -2,9 +2,9 @@ package me.drex.worldmanager.gui.util;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
-
-import static me.drex.message.api.LocalizedMessage.localized;
 
 public class GuiElements {
     public static GuiElementBuilder back(SimpleGui previousGui) {
@@ -12,7 +12,7 @@ public class GuiElements {
             return new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(SkullTextures.BACKWARD)
                 .setCallback(previousGui::open)
-                .setName(localized("worldmanager.gui.generic.back.name"));
+                .setName(Component.literal("Back").withStyle(ChatFormatting.RED));
         } else {
             return new GuiElementBuilder(Items.AIR);
         }

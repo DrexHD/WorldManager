@@ -22,7 +22,6 @@ java {
 repositories {
     mavenCentral()
     maven("https://maven.nucleoid.xyz/")
-    maven("https://api.modrinth.com/maven")
 }
 
 loom {
@@ -55,7 +54,6 @@ dependencies {
 
     includeMod("eu.pb4:sgui:${findProperty("sgui_version")}")
 
-    includeMod("maven.modrinth:message-api:${findProperty("message_api_version")}")
     includeMod("eu.pb4:placeholder-api:${findProperty("placeholder_api_version")}")
     includeMod("eu.pb4:player-data-api:${findProperty("player_data_api_version")}")
 

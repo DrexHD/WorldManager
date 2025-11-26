@@ -3,11 +3,10 @@ package me.drex.worldmanager.gui.util;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
-
-import static me.drex.message.api.LocalizedMessage.builder;
-import static me.drex.message.api.LocalizedMessage.localized;
 
 public class ConfirmTypeGui extends AnvilInputGui {
     private final String text;
@@ -19,7 +18,7 @@ public class ConfirmTypeGui extends AnvilInputGui {
         this.text = text;
         this.action = action;
         this.previousGui = previousGui;
-        setTitle(builder("worldmanager.gui.confirm_type.title").addPlaceholder("text", text).build());
+        setTitle(Component.literal("Type '" + text + "' below to confirm!").withStyle(ChatFormatting.DARK_RED));
     }
 
     @Override
@@ -27,8 +26,7 @@ public class ConfirmTypeGui extends AnvilInputGui {
         if (input.equals(text)) {
             setSlot(2,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
-                    .setName(localized("worldmanager.gui.confirm_type.confirm.name"))
-                    .addLoreLine(localized("worldmanager.gui.confirm_type.confirm.lore"))
+                    .setName(Component.literal("Confirm!").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
                     .setSkullOwner(SkullTextures.CHECKMARK)
                     .setCallback(action)
             );
@@ -37,8 +35,7 @@ public class ConfirmTypeGui extends AnvilInputGui {
         }
         setSlot(1,
             new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setName(localized("worldmanager.gui.confirm_type.cancel.name"))
-                .addLoreLine(localized("worldmanager.gui.confirm_type.cancel.lore"))
+                .setName(Component.literal("Cancel!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
                 .setSkullOwner(SkullTextures.BACKWARD)
                 .setCallback(previousGui::open)
         );

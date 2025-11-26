@@ -3,12 +3,13 @@ package me.drex.worldmanager.gui;
 import me.drex.worldmanager.gui.configure.ConfigureWorld;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
+import me.drex.worldmanager.util.VersionUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
-
-import static me.drex.message.api.LocalizedMessage.builder;
 
 public class ImportWorld extends ConfigureWorld {
     public ImportWorld(ServerPlayer player, ResourceLocation id) {
@@ -23,6 +24,12 @@ public class ImportWorld extends ConfigureWorld {
         RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(id, config.toRuntimeWorldConfig());
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
         savedData.addWorld(id, config, handle);
-        player.sendSystemMessage(builder("worldmanager.command.import").addPlaceholder("id", id.toString()).build(), false);
+        player.sendSystemMessage(Component.empty()
+            .append(Component.literal("World " + id + " has been imported successfully. "))
+            .append(Component.literal("Click to teleport!").withStyle(style ->
+                    style.withColor(ChatFormatting.AQUA).withUnderlined(true)
+                        .withClickEvent(VersionUtil.runCommand("/wm tp " + id))
+                )
+            ), false);
     }
 }

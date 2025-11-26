@@ -6,7 +6,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import me.drex.worldmanager.gui.CreateWorld;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
+import me.drex.worldmanager.util.VersionUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -23,8 +25,7 @@ import net.minecraft.world.level.Level;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import static me.drex.message.api.LocalizedMessage.builder;
-import static me.drex.message.api.LocalizedMessage.localized;
+import static me.drex.worldmanager.command.WorldManagerCommand.ALREADY_EXISTS;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
@@ -40,7 +41,7 @@ public class CreateCommand {
                         MinecraftServer server = context.getSource().getServer();
                         ServerLevel level = server.getLevel(resourceKey);
                         if (level != null) {
-                            throw new SimpleCommandExceptionType(localized("worldmanager.command.exception.world_already_exists")).create();
+                            throw ALREADY_EXISTS.create();
                         }
 
                         new CreateWorld(context.getSource().getPlayerOrException(), id).open();
@@ -63,7 +64,14 @@ public class CreateCommand {
 
                                 WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
                                 savedData.addWorld(id, config, handle);
-                                context.getSource().sendSuccess(() -> builder("worldmanager.command.create").addPlaceholder("id", id.toString()).build(), false);
+                                context.getSource().sendSuccess(() ->
+                                    Component.empty()
+                                        .append(Component.literal("World " + id + " has been created successfully. "))
+                                        .append(Component.literal("Click to teleport!").withStyle(style ->
+                                                style.withColor(ChatFormatting.AQUA).withUnderlined(true)
+                                                    .withClickEvent(VersionUtil.runCommand("/wm tp " + id))
+                                            )
+                                        ), false);
                                 return 1;
                             })
                     )
@@ -74,7 +82,7 @@ public class CreateCommand {
         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
         ServerLevel level = server.getLevel(resourceKey);
         if (level != null) {
-            throw new SimpleCommandExceptionType(localized("worldmanager.command.exception.world_already_exists")).create();
+            throw ALREADY_EXISTS.create();
         }
     }
 }

@@ -2,14 +2,14 @@ package me.drex.worldmanager.gui.util;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
-
-import static me.drex.message.api.LocalizedMessage.localized;
 
 public abstract class PagedGui<T> extends SimpleGui {
     private static final int WIDTH = 9;
@@ -52,7 +52,7 @@ public abstract class PagedGui<T> extends SimpleGui {
         return switch (index) {
             case 0 -> new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(SkullTextures.ARROW_LEFT)
-                .setName(localized("worldmanager.gui.paged.previous_page.name"))
+                .setName(Component.literal("Next Page").withStyle(ChatFormatting.YELLOW))
                 .setCallback(() -> {
                     page = Math.max(page - 1, 0);
                     build();
@@ -60,7 +60,7 @@ public abstract class PagedGui<T> extends SimpleGui {
             case 4 -> GuiElements.back(previousGui);
             case 8 -> new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setSkullOwner(SkullTextures.ARROW_RIGHT)
-                .setName(localized("worldmanager.gui.paged.next_page.name"))
+                .setName(Component.literal("Previous Page").withStyle(ChatFormatting.YELLOW))
                 .setCallback(() -> {
                     var maxPage = (elements().size() - 1) / slots;
                     page = Math.min(page + 1, maxPage);

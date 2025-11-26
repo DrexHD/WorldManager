@@ -17,14 +17,17 @@ import me.drex.worldmanager.save.Location;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldData;
 import me.drex.worldmanager.save.WorldManagerSavedData;
+import me.drex.worldmanager.util.VersionUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -44,7 +47,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import static me.drex.message.api.LocalizedMessage.builder;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
@@ -74,13 +76,10 @@ public class ImportCommand {
         }
     };
 
-    public static final DynamicCommandExceptionType MISSING_LEVEL_DAT = new DynamicCommandExceptionType((file) -> builder("worldmanager.command.import.exception.level_dat").addPlaceholder("file", file.toString()).build());
-    public static final DynamicCommandExceptionType RAR5 = new DynamicCommandExceptionType((file) -> builder("worldmanager.command.import.exception.rar5").addPlaceholder("file", file.toString()).build());
-    public static final Dynamic2CommandExceptionType UNKNOWN_EXTENSION = new Dynamic2CommandExceptionType((file, extension) -> builder("worldmanager.command.import.exception.unknown_extension")
-        .addPlaceholder("file", file.toString())
-        .addPlaceholder("extension", extension.toString())
-        .build());
-    public static final DynamicCommandExceptionType IO_EXCEPTION = new DynamicCommandExceptionType((file) -> builder("worldmanager.command.import.exception.ioexception").addPlaceholder("file", file.toString()).build());
+    public static final DynamicCommandExceptionType MISSING_LEVEL_DAT = new DynamicCommandExceptionType((file) -> Component.literal("Failed to find/read level.dat in '" + file + "'"));
+    public static final DynamicCommandExceptionType RAR5 = new DynamicCommandExceptionType((file) -> Component.literal("Failed to extract rar file '" + file + "'. RAR v5 is not supported, please extract manually!"));
+    public static final Dynamic2CommandExceptionType UNKNOWN_EXTENSION = new Dynamic2CommandExceptionType((file, extension) -> Component.literal("Failed to extract file '" + file + "'. Unknown extension: '" + extension + "'!"));
+    public static final DynamicCommandExceptionType IO_EXCEPTION = new DynamicCommandExceptionType((file) -> Component.literal("Failed to extract/copy file '" + file + "'. Check console for more details!"));
 
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return literal("import")
@@ -127,7 +126,14 @@ public class ImportCommand {
             RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(id, config.toRuntimeWorldConfig());
             WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
             savedData.addWorld(id, config, handle);
-            source.sendSuccess(() -> builder("worldmanager.command.import").addPlaceholder("id", id.toString()).build(), false);
+            source.sendSuccess(() ->
+                Component.empty()
+                    .append(Component.literal("World " + id + " has been imported successfully. "))
+                    .append(Component.literal("Click to teleport!").withStyle(style ->
+                            style.withColor(ChatFormatting.AQUA).withUnderlined(true)
+                                .withClickEvent(VersionUtil.runCommand("/wm tp " + id))
+                        )
+                    ), false);
         }
 
         return 1;

@@ -6,6 +6,8 @@ import me.drex.worldmanager.gui.util.PagedGui;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -13,13 +15,10 @@ import net.minecraft.world.inventory.MenuType;
 import java.util.List;
 import java.util.Map;
 
-import static me.drex.message.api.LocalizedMessage.builder;
-import static me.drex.message.api.LocalizedMessage.localized;
-
 public class WorldList extends PagedGui<Map.Entry<ResourceLocation, WorldConfig>> {
     public WorldList(ServerPlayer player) {
         super(MenuType.GENERIC_9x6, player);
-        setTitle(localized("worldmanager.gui.world_list.title"));
+        setTitle(Component.literal("World List"));
         build();
     }
 
@@ -32,8 +31,9 @@ public class WorldList extends PagedGui<Map.Entry<ResourceLocation, WorldConfig>
     protected GuiElementBuilder toGuiElement(Map.Entry<ResourceLocation, WorldConfig> entry) {
         WorldConfig config = entry.getValue();
         ResourceLocation id = entry.getKey();
-        return config.data.iconGuiElement().setName(builder("worldmanager.gui.world_list.entry.name").addPlaceholder("id", id.toString()).build())
-            .addLoreLine(builder("worldmanager.gui.world_list.entry.lore").addPlaceholder("id", id.toString()).build())
+        return config.data.iconGuiElement().setName(Component.literal(id.toString()).withStyle(ChatFormatting.YELLOW))
+            .addLoreLine(Component.literal("Left Click to teleport!").withStyle(ChatFormatting.GRAY))
+            .addLoreLine(Component.literal("Right Click to manage world!").withStyle(ChatFormatting.GRAY))
             .setCallback(clickType -> {
                 if (clickType.isLeft) {
                     if (Permissions.check(player, "worldmanager.command.worldmanager.teleport", 2)) {

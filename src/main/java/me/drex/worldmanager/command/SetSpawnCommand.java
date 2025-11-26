@@ -2,14 +2,15 @@ package me.drex.worldmanager.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.drex.message.api.LocalizedMessage;
 import me.drex.worldmanager.save.Location;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 
@@ -36,10 +37,8 @@ public class SetSpawnCommand {
         config.data.spawnLocation = Optional.of(location);
         savedData.setDirty();
 
-        source.sendSuccess(() -> LocalizedMessage.builder("worldmanager.command.setspawn")
-            .addPlaceholder("id", id.toString())
-            .addPlaceholders(location.placeholders())
-            .build(), false);
+        Vec3 position = location.position();
+        source.sendSuccess(() -> Component.literal("Set world spawn point in " + id + " to " + position.x + " " + position.y + " " + position.z), false);
         return 1;
     }
 }
