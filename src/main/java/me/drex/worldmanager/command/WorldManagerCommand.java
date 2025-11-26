@@ -38,6 +38,7 @@ public class WorldManagerCommand {
                 .then(TeleportCommand.build())
                 .then(CreateCommand.build())
                 .then(ImportCommand.build())
+                .then(ExportCommand.build())
                 .then(ManageCommand.build())
                 .then(ListCommand.build())
         );

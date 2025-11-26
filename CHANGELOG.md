@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- World export command
+
 ## [1.3.7] - 2025-10-28
 ### Changed
 - Load worlds earlier to improve mod compatibility

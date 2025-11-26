@@ -41,24 +41,33 @@ public abstract class PagedGui<T> extends SimpleGui {
             setSlot(slotIndex, toGuiElement(element));
         }
 
-        setSlot(slots, new GuiElementBuilder(Items.PLAYER_HEAD)
-            .setSkullOwner(SkullTextures.ARROW_LEFT)
-            .setName(localized("worldmanager.gui.paged.previous_page.name"))
-            .setCallback(() -> {
-                page = Math.max(page - 1, 0);
-                build();
-            })
-        );
-        setSlot(slots + 4, GuiElements.back(previousGui));
-        setSlot(slots + 8, new GuiElementBuilder(Items.PLAYER_HEAD)
-            .setSkullOwner(SkullTextures.ARROW_RIGHT)
-            .setName(localized("worldmanager.gui.paged.next_page.name"))
-            .setCallback(() -> {
-                var maxPage = (elements.size() - 1) / slots;
-                page = Math.min(page + 1, maxPage);
-                build();
-            })
-        );
+        for (int i = 0; i < WIDTH; i++) {
+            GuiElementBuilder bar = getNavigationBar(i);
+            if (bar != null) setSlot(slots + i, bar);
+        }
+    }
+
+    public GuiElementBuilder getNavigationBar(int index) {
+        var slots = getVirtualSize() - WIDTH;
+        return switch (index) {
+            case 0 -> new GuiElementBuilder(Items.PLAYER_HEAD)
+                .setSkullOwner(SkullTextures.ARROW_LEFT)
+                .setName(localized("worldmanager.gui.paged.previous_page.name"))
+                .setCallback(() -> {
+                    page = Math.max(page - 1, 0);
+                    build();
+                });
+            case 4 -> GuiElements.back(previousGui);
+            case 8 -> new GuiElementBuilder(Items.PLAYER_HEAD)
+                .setSkullOwner(SkullTextures.ARROW_RIGHT)
+                .setName(localized("worldmanager.gui.paged.next_page.name"))
+                .setCallback(() -> {
+                    var maxPage = (elements().size() - 1) / slots;
+                    page = Math.min(page + 1, maxPage);
+                    build();
+                });
+            default -> null;
+        };
     }
 
     protected abstract List<T> elements();

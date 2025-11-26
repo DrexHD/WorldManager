@@ -18,6 +18,12 @@ The main command is `/worldmanager`. It has a shorter alias `/wm`.
 ### Import
 `/wm create <id> <path> [--custom-config]` allows you to import a world from a zip, rar or tar archive, or from a folder.
 
+
+### Export
+`/wm export [<id>]` allows you to export the current world to an `export.zip` archive.
+This zip file will contain the specified world (or all selected worlds if the id is not specified), along with an
+appropriate `level.dat` file and a datapack to correctly load the worlds (e.g., in singleplayer).
+
 The file / folder needs to contain a valid `level.dat` file.
 This will import the overworld dimension of the given world.
 
