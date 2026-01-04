@@ -11,20 +11,16 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Dynamic;
 import me.drex.worldmanager.WorldManager;
 import me.drex.worldmanager.extractor.*;
-import me.drex.worldmanager.gui.ImportWorld;
+import me.drex.worldmanager.gui.import0.ImportWorlds;
 import me.drex.worldmanager.mixin.MinecraftServerAccessor;
 import me.drex.worldmanager.save.Location;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldData;
 import me.drex.worldmanager.save.WorldManagerSavedData;
-import me.drex.worldmanager.util.VersionUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -32,8 +28,11 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -46,6 +45,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+//? if >= 1.21.5 {
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+//? }
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -79,35 +82,24 @@ public class ImportCommand {
     public static final DynamicCommandExceptionType MISSING_LEVEL_DAT = new DynamicCommandExceptionType((file) -> Component.literal("Failed to find/read level.dat in '" + file + "'"));
     public static final DynamicCommandExceptionType RAR5 = new DynamicCommandExceptionType((file) -> Component.literal("Failed to extract rar file '" + file + "'. RAR v5 is not supported, please extract manually!"));
     public static final Dynamic2CommandExceptionType UNKNOWN_EXTENSION = new Dynamic2CommandExceptionType((file, extension) -> Component.literal("Failed to extract file '" + file + "'. Unknown extension: '" + extension + "'!"));
-    public static final DynamicCommandExceptionType IO_EXCEPTION = new DynamicCommandExceptionType((file) -> Component.literal("Failed to extract/copy file '" + file + "'. Check console for more details!"));
+    public static final DynamicCommandExceptionType IO_EXCEPTION = new DynamicCommandExceptionType((world) -> Component.literal("Failed to extract/copy world '" + world + "'. Check console for more details!"));
 
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return literal("import")
             .requires(Permissions.require("worldmanager.command.worldmanager.import", 4))
             .then(
-                argument("id", ResourceLocationArgument.id())
-                    .then(
-                        argument("path", StringArgumentType.string())
-                            .suggests(PATHS)
-                            .executes(context -> importWorld(context.getSource(), ResourceLocationArgument.getId(context, "id"), StringArgumentType.getString(context, "path"), false))
-                            .then(
-                                Commands.literal("--custom-config")
-                                    .executes(context -> importWorld(context.getSource(), ResourceLocationArgument.getId(context, "id"), StringArgumentType.getString(context, "path"), true))
-                            )
-                    )
+                argument("path", StringArgumentType.string())
+                    .suggests(PATHS)
+                    .executes(context -> openGui(context.getSource(), StringArgumentType.getString(context, "path")))
             );
     }
 
-    public static int importWorld(CommandSourceStack source, ResourceLocation id, String localPath, boolean customConfig) throws CommandSyntaxException {
+    public static int openGui(CommandSourceStack source, String localPath) throws CommandSyntaxException {
         MinecraftServer server = source.getServer();
-        CreateCommand.validLevelId(id, server);
-
-        Fantasy fantasy = Fantasy.get(server);
-        LevelStorageSource.LevelStorageAccess storageSource = ((MinecraftServerAccessor) server).getStorageSource();
-        Path targetPath = storageSource.getDimensionPath(ResourceKey.create(Registries.DIMENSION, id));
+        ServerPlayer player = source.getPlayerOrException();
 
         Path fullPath = FabricLoader.getInstance().getGameDir().resolve(localPath);
-        WorldConfig config;
+        Map<ResourceLocation, WorldConfig> worldConfigs;
         try {
             Optional<ArchiveExtractor> extractor = EXTRACTORS.stream()
                 .filter(e -> e.supports(fullPath))
@@ -115,37 +107,66 @@ public class ImportCommand {
             if (extractor.isEmpty()) {
                 throw UNKNOWN_EXTENSION.create(fullPath, FilenameUtils.getExtension(fullPath.toString()));
             }
-            config = extractor.get().extract(fullPath, targetPath, server);
+
+            worldConfigs = extractor.get().open(fullPath, server);
+            if (worldConfigs.isEmpty()) throw MISSING_LEVEL_DAT.create(fullPath);
+
+            new ImportWorlds(player, worldConfigs, extractor.get()).open();
+            return 1;
         } catch (IOException e) {
-            WorldManager.LOGGER.error("Failed to extract world", e);
+            WorldManager.LOGGER.error("Failed to open world archive", e);
             throw IO_EXCEPTION.create(fullPath);
         }
-        if (customConfig) {
-            new ImportWorld(source.getPlayerOrException(), id).open();
-        } else {
-            RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(id, config.toRuntimeWorldConfig());
-            WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
-            savedData.addWorld(id, config, handle);
-            source.sendSuccess(() ->
-                Component.empty()
-                    .append(Component.literal("World " + id + " has been imported successfully. "))
-                    .append(Component.literal("Click to teleport!").withStyle(style ->
-                            style.withColor(ChatFormatting.AQUA).withUnderlined(true)
-                                .withClickEvent(VersionUtil.runCommand("/wm tp " + id))
-                        )
-                    ), false);
-        }
+    }
 
+    public static int importWorlds(CommandSourceStack source, Map<ResourceLocation, WorldConfig> worldConfigs, Map<ResourceLocation, ResourceLocation> importWorldIds, ArchiveExtractor archiveExtractor) throws CommandSyntaxException {
+        MinecraftServer server = source.getServer();
+        Fantasy fantasy = Fantasy.get(server);
+
+        for (Map.Entry<ResourceLocation, ResourceLocation> entry : importWorldIds.entrySet()) {
+            ResourceLocation originalId = entry.getKey();
+            ResourceLocation newId = entry.getValue();
+
+            ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, newId);
+            ServerLevel level = server.getLevel(resourceKey);
+            if (level != null) continue; // world already exists
+
+            WorldConfig config = worldConfigs.get(originalId);
+            if (config == null) continue; // shouldn't happen
+
+            LevelStorageSource.LevelStorageAccess storageSource = ((MinecraftServerAccessor) server).getStorageSource();
+            Path levelDirectory = storageSource.getLevelDirectory().path();
+            Path sourcePath = storageSource.getDimensionPath(ResourceKey.create(Registries.DIMENSION, originalId));
+            Path targetRootPath = storageSource.getDimensionPath(ResourceKey.create(Registries.DIMENSION, newId));
+
+            try {
+                archiveExtractor.extract(levelDirectory.relativize(sourcePath), targetRootPath, server);
+            } catch (IOException e) {
+                WorldManager.LOGGER.error("Failed to extract world", e);
+                throw IO_EXCEPTION.create(newId.toString());
+            }
+
+            RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(newId, config.toRuntimeWorldConfig());
+            WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
+            savedData.addWorld(newId, config, handle);
+        }
+        source.sendSuccess(() -> Component.empty().append(Component.literal("Successfully imported " + importWorldIds.size() + " worlds.")), false);
+        try {
+            archiveExtractor.close();
+        } catch (IOException e) {
+            WorldManager.LOGGER.error("Failed to close archive extractor", e);
+        }
         return 1;
     }
 
     //? if >= 1.21.5 {
-    public static Optional<WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
+    public static Map<ResourceLocation, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
 
         Optional<CompoundTag> unfixedData = tag.getCompound("Data");
-        if (unfixedData.isEmpty()) return Optional.empty();
-        CompoundTag data = fixLevelData(unfixedData.get()).orElse(unfixedData.get());
+        if (unfixedData.isEmpty()) return Collections.emptyMap();
+//        CompoundTag data = fixLevelData(unfixedData.get()).orElse(unfixedData.get());
+        CompoundTag data = unfixedData.get();
 
         var spawnX = data.getIntOr("SpawnX", 0);
         var spawnY = data.getIntOr("SpawnY", 0);
@@ -155,18 +176,23 @@ public class ImportCommand {
             .flatMap(worldGenSettings -> {
                 long seed = worldGenSettings.getLongOr("seed", 0);
                 return worldGenSettings.getCompound("dimensions")
-                    // TODO add option to pick dimension
-                    .flatMap(dimensions -> dimensions.getCompound("minecraft:overworld")
-                        .flatMap(overworld -> {
-                            return createWorldConfig(server, overworld, spawnX, spawnY, spawnZ, spawnAngle, seed);
-                        }));
-            });
+                    .map(compoundTag -> {
+                        Stream<Map.Entry<ResourceLocation, Optional<WorldConfig>>> stream = compoundTag.entrySet().stream().map(stringTagEntry -> {
+                            String dimensionKey = stringTagEntry.getKey();
+                            ResourceLocation id = ResourceLocation.tryParse(dimensionKey);
+                            return Map.entry(id, createWorldConfig(server, stringTagEntry.getValue(), spawnX, spawnY, spawnZ, spawnAngle, seed));
+                        }).filter(entry -> entry.getKey() != null && entry.getValue().isPresent());
+                        return stream.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElseThrow()));
+                    });
+            }).orElse(Collections.emptyMap());
     }
     //?} else {
-    /*public static Optional<WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
+    /*public static Map<ResourceLocation, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
+        Map<ResourceLocation, WorldConfig> configs = new HashMap<>();
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
         var unfixedData = tag.getCompound("Data");
-        var data = fixLevelData(unfixedData).orElse(unfixedData);
+//        var data = fixLevelData(unfixedData).orElse(unfixedData);
+        var data = unfixedData;
 
         var spawnX = data.getInt("SpawnX");
         var spawnY = data.getInt("SpawnY");
@@ -174,9 +200,17 @@ public class ImportCommand {
         var spawnAngle = data.getFloat("SpawnAngle");
         var worldGenSettings = data.getCompound("WorldGenSettings");
         long seed = worldGenSettings.getLong("seed");
-        // TODO add option to pick dimension
-        var overworld = worldGenSettings.getCompound("dimensions").getCompound("minecraft:overworld");
-        return createWorldConfig(server, overworld, spawnX, spawnY, spawnZ, spawnAngle, seed);
+        CompoundTag dimensions = worldGenSettings.getCompound("dimensions");
+        for (String dimensionKey : dimensions.getAllKeys()) {
+            var dimension = dimensions.getCompound(dimensionKey);
+            Optional<WorldConfig> worldConfig = createWorldConfig(server, dimension, spawnX, spawnY, spawnZ, spawnAngle, seed);
+            ResourceLocation resourceLocation = ResourceLocation.tryParse(dimensionKey);
+
+            if (resourceLocation != null && worldConfig.isPresent()) {
+                configs.put(resourceLocation, worldConfig.get());
+            }
+        }
+        return configs;
     }
     *///?}
 
@@ -195,7 +229,7 @@ public class ImportCommand {
             Optional.empty();
     }
 
-    private static Optional<WorldConfig> createWorldConfig(MinecraftServer server, CompoundTag overworld, int spawnX, int spawnY, int spawnZ, float spawnAngle, long seed) {
+    private static Optional<WorldConfig> createWorldConfig(MinecraftServer server, Tag overworld, int spawnX, int spawnY, int spawnZ, float spawnAngle, long seed) {
         try {
             WorldConfig config = WorldConfig.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, server.registryAccess()), overworld)
                 .getOrThrow(IllegalStateException::new)

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - World export command
+- Option to pick multiple worlds to import from an archive
 
 ### Changed
 - Removed message-api library

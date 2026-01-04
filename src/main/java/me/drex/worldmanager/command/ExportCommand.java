@@ -66,6 +66,8 @@ public class ExportCommand {
         try {
             Path exportFile = FabricLoader.getInstance().getGameDir().resolve("export.zip");
             if (Files.exists(exportFile)) {
+                // TODO Add option to choose file or overwrite
+//                Files.delete(exportFile);
                 source.sendFailure(Component.literal("An export.zip file already exists, please remove before exporting!"));
                 return 0;
             }
@@ -93,7 +95,8 @@ public class ExportCommand {
                         if (Files.isDirectory(path) || path.getNameCount() <= 2) return;
                         // strip "./world/" from path
                         Path subPath = path.subpath(2, path.getNameCount());
-                        Path prefix = subPath.getName(0);
+                        Path relativize = targetPath.relativize(path);
+                        Path prefix = relativize.getName(0);
                         if (!ImportCommand.DIMENSION_PREFIXES.contains(prefix.toString())) return;
 
                         ZipEntry zipEntry = new ZipEntry(subPath.toString());
@@ -185,7 +188,7 @@ public class ExportCommand {
         CompoundTag worldGenSettingsTag = new CompoundTag();
         worldGenSettingsTag.put("dimensions", dimensionsTag);
 
-        root.put("WorldGenSettings", worldGenSettingsTag);
+        data.put("WorldGenSettings", worldGenSettingsTag);
         root.put("Data", data);
         return root;
     }
