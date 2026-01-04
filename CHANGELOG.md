@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-01-04
 ### Added
 - World export command
 - Option to pick multiple worlds to import from an archive
+- Set portal behavior command
 
 ### Changed
 - Removed message-api library

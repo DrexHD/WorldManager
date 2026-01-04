@@ -5,6 +5,7 @@ import eu.pb4.playerdata.api.storage.NbtCodecDataStorage;
 import me.drex.worldmanager.command.WorldManagerCommand;
 import me.drex.worldmanager.data.PlayerData;
 import me.drex.worldmanager.save.ChunkGenerators;
+import me.drex.worldmanager.save.PortalBehaviour;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resources.Identifier;
@@ -25,6 +26,7 @@ public class WorldManager implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, commandBuildContext, environment) -> {
             WorldManagerCommand.register(dispatcher, commandBuildContext);
         });
+        PortalBehaviour.init();
     }
 
     public static Identifier id(String path) {

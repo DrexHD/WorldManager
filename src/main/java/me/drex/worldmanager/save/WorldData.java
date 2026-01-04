@@ -3,22 +3,30 @@ package me.drex.worldmanager.save;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class WorldData {
+
     public Optional<Location> spawnLocation = Optional.empty();
     public ItemStack icon = ItemStack.EMPTY;
+    public Map<Identifier, Identifier> portals = Map.of();
 
     public static final Codec<WorldData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Location.CODEC.optionalFieldOf("spawn_location").forGetter(worldData -> worldData.spawnLocation),
-        ItemStack.CODEC.optionalFieldOf("icon", ItemStack.EMPTY).forGetter(worldData -> worldData.icon)
-    ).apply(instance, instance.stable((location, icon) -> {
+        ItemStack.CODEC.optionalFieldOf("icon", ItemStack.EMPTY).forGetter(worldData -> worldData.icon),
+        Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("portals", Collections.emptyMap()).forGetter(worldData -> worldData.portals)
+    ).apply(instance, instance.stable((location, icon, portals) -> {
         WorldData data = new WorldData();
         data.spawnLocation = location;
         data.icon = icon;
+        data.portals = new HashMap<>(portals);
         return data;
     })));
 

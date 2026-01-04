@@ -9,6 +9,7 @@ The main command is `/worldmanager`. It has a shorter alias `/wm`.
 - `/wm tp <id> [<targets>]` teleports to the specified world to the players last location.
 - `/wm seticon <id> [<icon>]` sets the world icon to the specified item, or the item in your hand.
 - `/wm manage [<id>]` opens world management gui for the specified world, or the current world 
+- `/wm setportal <portal_id> [<destination>]` changes the portal destination of the specified portal in the current world 
 
 ### Create
 `/wm create <id>` opens a gui where you can configure your world (dimension type, chunk generator and seed)

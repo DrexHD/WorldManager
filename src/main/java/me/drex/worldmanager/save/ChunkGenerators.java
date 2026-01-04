@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -17,6 +18,8 @@ import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ChunkGenerators {
     public static final List<Preset> PRESETS = new LinkedList<>();
@@ -24,7 +27,10 @@ public class ChunkGenerators {
     public static void init() {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             RegistryAccess.Frozen registry = server.registryAccess();
+            Set<Identifier> customWorlds = WorldManagerSavedData.getSavedData(server).getWorlds().keySet();
             server.getAllLevels().forEach(level -> {
+                if (customWorlds.contains(level.dimension().identifier())) return;
+
                 ChunkGenerator generator = level.getChunkSource().getGenerator();
                 ItemLike icon = Items.STONE;
                 if (generator instanceof NoiseBasedChunkGenerator noiseBasedChunkGenerator) {

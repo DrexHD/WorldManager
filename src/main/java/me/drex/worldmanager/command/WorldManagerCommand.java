@@ -27,6 +27,7 @@ public class WorldManagerCommand {
 
     public static final SimpleCommandExceptionType UNKNOWN_WORLD = new SimpleCommandExceptionType(Component.literal("Unknown world id!"));
     public static final SimpleCommandExceptionType ALREADY_EXISTS = new SimpleCommandExceptionType(Component.literal("A world with that id already exists!"));
+    public static final SimpleCommandExceptionType NOT_SUPPORTED = new SimpleCommandExceptionType(Component.literal("This world doesn't support this command!"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext) {
         var root = dispatcher.register(
@@ -36,6 +37,7 @@ public class WorldManagerCommand {
                 .then(SpawnCommand.build())
                 .then(SetIconCommand.build(commandBuildContext))
                 .then(SetSpawnCommand.build())
+                .then(SetPortalCommand.build())
                 .then(TeleportCommand.build())
                 .then(CreateCommand.build())
                 .then(ImportCommand.build())

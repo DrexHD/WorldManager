@@ -7,11 +7,13 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 //? if >= 1.21.5 {
 import net.minecraft.world.level.saveddata.SavedDataType;
 //?}
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
@@ -60,6 +62,12 @@ public class WorldManagerSavedData extends SavedData {
         *///?}
     }
 
+    @Nullable
+    public static WorldConfig getConfig(ServerLevel level) {
+        WorldManagerSavedData savedData = getSavedData(level.getServer());
+        return savedData.getConfig(level.dimension().identifier());
+    }
+
     public void loadWorlds(MinecraftServer server) {
         this.worlds.forEach((id, worldConfig) -> {
             RuntimeWorldHandle handle = Fantasy.get(server).getOrOpenPersistentWorld(id, worldConfig.toRuntimeWorldConfig());
@@ -84,6 +92,7 @@ public class WorldManagerSavedData extends SavedData {
         return false;
     }
 
+    @Nullable
     public WorldConfig getConfig(Identifier id) {
         return worlds.get(id);
     }

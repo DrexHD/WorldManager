@@ -9,7 +9,10 @@
     "ExecuteCommandMixin",
     "MinecraftServerAccessor",
     "MinecraftServerMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "portal.BaseFireBlockMixin",
+    "portal.EndPortalBlockMixin",
+    "portal.NetherPortalBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
