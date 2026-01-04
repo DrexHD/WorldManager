@@ -2,7 +2,7 @@ package me.drex.worldmanager.extractor;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public interface ArchiveExtractor {
     boolean supports(Path path);
 
     // TODO support reading world configs from datapacks
-    Map<ResourceLocation, WorldConfig> open(Path archive, MinecraftServer server) throws IOException, CommandSyntaxException;
+    Map<Identifier, WorldConfig> open(Path archive, MinecraftServer server) throws IOException, CommandSyntaxException;
 
     void extract(Path relativeSourcePath, Path targetRootPath, MinecraftServer server) throws IOException;
 

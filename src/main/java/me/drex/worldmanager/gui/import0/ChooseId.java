@@ -8,7 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
@@ -17,10 +17,10 @@ import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 
 public class ChooseId extends AnvilInputGui {
-    private final Consumer<ResourceLocation> consumer;
+    private final Consumer<Identifier> consumer;
     private final SimpleGui previousGui;
 
-    public ChooseId(ServerPlayer player, ResourceLocation id, Consumer<ResourceLocation> consumer, SimpleGui previousGui) {
+    public ChooseId(ServerPlayer player, Identifier id, Consumer<Identifier> consumer, SimpleGui previousGui) {
         super(player, false);
         this.consumer = consumer;
         this.previousGui = previousGui;
@@ -36,7 +36,7 @@ public class ChooseId extends AnvilInputGui {
     @Override
     public void onInput(String input) {
         super.onInput(input);
-        ResourceLocation id = ResourceLocation.tryParse(input);
+        Identifier id = Identifier.tryParse(input);
         if (id == null) {
             setSlot(2,
                 new GuiElementBuilder(Items.RED_STAINED_GLASS_PANE)

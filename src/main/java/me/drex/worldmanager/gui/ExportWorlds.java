@@ -7,7 +7,7 @@ import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 
 public class ExportWorlds extends PagedGui<ExportWorlds.Entry> {
-    private final Set<ResourceLocation> selectedWorlds = new HashSet<>();
+    private final Set<Identifier> selectedWorlds = new HashSet<>();
 
     public ExportWorlds(ServerPlayer player) {
         super(MenuType.GENERIC_9x6, player);
@@ -44,7 +44,7 @@ public class ExportWorlds extends PagedGui<ExportWorlds.Entry> {
         List<Entry> result = new ArrayList<>();
         MinecraftServer server = player.level().getServer();
         server.levelKeys().forEach(key -> {
-            ResourceLocation id = key.location();
+            Identifier id = key.identifier();
             WorldConfig config = WorldManagerSavedData.getSavedData(server).getConfig(id);
             GuiElementBuilder builder;
             if (config != null) {
@@ -68,7 +68,7 @@ public class ExportWorlds extends PagedGui<ExportWorlds.Entry> {
 
     @Override
     protected GuiElementBuilder toGuiElement(Entry entry) {
-        ResourceLocation id = entry.id();
+        Identifier id = entry.id();
         return entry.icon()
             .setName(Component.literal(id.toString()).withStyle(ChatFormatting.YELLOW))
             .setDamage(selectedWorlds.contains(id) ? 1 : 0)
@@ -85,7 +85,7 @@ public class ExportWorlds extends PagedGui<ExportWorlds.Entry> {
             });
     }
 
-    public record Entry(ResourceLocation id, GuiElementBuilder icon) {
+    public record Entry(Identifier id, GuiElementBuilder icon) {
     }
 
 }

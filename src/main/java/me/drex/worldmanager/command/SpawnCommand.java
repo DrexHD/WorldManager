@@ -9,11 +9,11 @@ import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,17 +33,17 @@ public class SpawnCommand {
         return literal("spawn")
             .requires(Permissions.require("worldmanager.command.worldmanager.spawn", 2))
             .then(
-                argument("id", ResourceLocationArgument.id())
+                argument("id", IdentifierArgument.id())
                     .suggests(WORLD_SUGGESTIONS)
-                    .executes(context -> spawn(context.getSource(), ResourceLocationArgument.getId(context, "id"), List.of(context.getSource().getPlayerOrException())))
+                    .executes(context -> spawn(context.getSource(), IdentifierArgument.getId(context, "id"), List.of(context.getSource().getPlayerOrException())))
                     .then(
                         argument("targets", EntityArgument.players())
-                            .executes(context -> spawn(context.getSource(), ResourceLocationArgument.getId(context, "id"), EntityArgument.getPlayers(context, "targets")))
+                            .executes(context -> spawn(context.getSource(), IdentifierArgument.getId(context, "id"), EntityArgument.getPlayers(context, "targets")))
                     )
             );
     }
 
-    public static int spawn(CommandSourceStack source, ResourceLocation id, Collection<ServerPlayer> targets) throws CommandSyntaxException {
+    public static int spawn(CommandSourceStack source, Identifier id, Collection<ServerPlayer> targets) throws CommandSyntaxException {
         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
         MinecraftServer server = source.getServer();
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
@@ -59,7 +59,7 @@ public class SpawnCommand {
         return 1;
     }
 
-    public static boolean spawn(ServerPlayer player, WorldConfig config, ResourceLocation id) {
+    public static boolean spawn(ServerPlayer player, WorldConfig config, Identifier id) {
         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
         ServerLevel serverLevel = player.level().getServer().getLevel(resourceKey);
         if (serverLevel == null) return false;

@@ -30,7 +30,7 @@ public class ChunkGenerators {
                 if (generator instanceof NoiseBasedChunkGenerator noiseBasedChunkGenerator) {
                     icon = noiseBasedChunkGenerator.generatorSettings().value().defaultBlock().getBlock();
                 }
-                var title = Component.translatable("generator.minecraft.normal").append(": ").append(Component.literal(level.dimension().location().toString()));
+                var title = Component.translatable("generator.minecraft.normal").append(": ").append(Component.literal(level.dimension().identifier().toString()));
                 PRESETS.add(new Preset(title, icon, generator));
             });
 
@@ -38,7 +38,7 @@ public class ChunkGenerators {
                 ResourceKey<FlatLevelGeneratorPreset> key = reference.key();
                 FlatLevelGeneratorPreset flatPreset = reference.value();
                 Component title = Component.translatable("generator.minecraft.flat").append(": ")
-                    .append(Component.translatable("flat_world_preset." + key.location().toLanguageKey()));
+                    .append(Component.translatable("flat_world_preset." + key.identifier().toLanguageKey()));
                 PRESETS.add(new Preset(title, flatPreset.displayItem().value(), new FlatLevelSource(flatPreset.settings())));
             });
             PRESETS.add(new Preset(Component.literal("Void"), Items.STRUCTURE_VOID, new VoidChunkGenerator(registry.lookupOrThrow(Registries.BIOME).get(Biomes.THE_VOID).orElseThrow())));

@@ -7,8 +7,8 @@ import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import static me.drex.worldmanager.command.WorldManagerCommand.*;
@@ -19,15 +19,15 @@ public class ManageCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return literal("manage")
             .requires(Permissions.require("worldmanager.command.worldmanager.manage", 2))
-            .executes(context -> manage(context.getSource().getPlayerOrException(), context.getSource().getLevel().dimension().location()))
+            .executes(context -> manage(context.getSource().getPlayerOrException(), context.getSource().getLevel().dimension().identifier()))
             .then(
-                argument("id", ResourceLocationArgument.id())
+                argument("id", IdentifierArgument.id())
                     .suggests(CUSTOM_WORLD_SUGGESTIONS)
-                    .executes(context -> manage(context.getSource().getPlayerOrException(), ResourceLocationArgument.getId(context, "id")))
+                    .executes(context -> manage(context.getSource().getPlayerOrException(), IdentifierArgument.getId(context, "id")))
             );
     }
 
-    public static int manage(ServerPlayer player, ResourceLocation id) throws CommandSyntaxException {
+    public static int manage(ServerPlayer player, Identifier id) throws CommandSyntaxException {
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(player.level().getServer());
         WorldConfig config = savedData.getConfig(id);
         if (config == null) {

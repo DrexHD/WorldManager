@@ -11,18 +11,18 @@ import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class ManageWorld extends SimpleGui {
-    private final ResourceLocation id;
+    private final Identifier id;
     private final WorldConfig config;
     private final SimpleGui previousGui;
 
-    public ManageWorld(ServerPlayer player, ResourceLocation id, WorldConfig config, SimpleGui previousGui) {
+    public ManageWorld(ServerPlayer player, Identifier id, WorldConfig config, SimpleGui previousGui) {
         super(MenuType.GENERIC_9x3, player, false);
         this.id = id;
         this.config = config;

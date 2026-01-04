@@ -8,10 +8,10 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,16 +25,16 @@ public class SetIconCommand {
         return literal("seticon")
             .requires(Permissions.require("worldmanager.command.worldmanager.seticon", 2))
             .then(
-                argument("id", ResourceLocationArgument.id())
+                argument("id", IdentifierArgument.id())
                     .suggests(WORLD_SUGGESTIONS)
                     .then(
                         Commands.argument("icon", ItemArgument.item(commandBuildContext))
-                            .executes(context -> setIcon(context.getSource(), ResourceLocationArgument.getId(context, "id"), ItemArgument.getItem(context, "icon").createItemStack(1, false)))
-                    ).executes(context -> setIcon(context.getSource(), ResourceLocationArgument.getId(context, "id"), context.getSource().getPlayerOrException().getMainHandItem()))
+                            .executes(context -> setIcon(context.getSource(), IdentifierArgument.getId(context, "id"), ItemArgument.getItem(context, "icon").createItemStack(1, false)))
+                    ).executes(context -> setIcon(context.getSource(), IdentifierArgument.getId(context, "id"), context.getSource().getPlayerOrException().getMainHandItem()))
             );
     }
 
-    public static int setIcon(CommandSourceStack source, ResourceLocation id, ItemStack icon) throws CommandSyntaxException {
+    public static int setIcon(CommandSourceStack source, Identifier id, ItemStack icon) throws CommandSyntaxException {
         MinecraftServer server = source.getServer();
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
         WorldConfig config = savedData.getConfig(id);

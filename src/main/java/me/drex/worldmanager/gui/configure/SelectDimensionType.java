@@ -37,7 +37,7 @@ public class SelectDimensionType extends PagedGui<Holder.Reference<DimensionType
     @Override
     protected GuiElementBuilder toGuiElement(Holder.Reference<DimensionType> holder) {
         return new GuiElementBuilder(toIcon(holder.key()))
-            .setName(Component.literal(holder.key().location().toString()))
+            .setName(Component.literal(holder.key().identifier().toString()))
             .setCallback(() -> {
                 consumer.accept(holder);
                 previousGui.open();

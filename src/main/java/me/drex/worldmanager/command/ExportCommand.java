@@ -16,7 +16,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.WorldVersion;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -56,13 +56,13 @@ public class ExportCommand {
                 return 1;
             })
             .then(
-                argument("id", ResourceLocationArgument.id())
+                argument("id", IdentifierArgument.id())
                     .suggests(WORLD_SUGGESTIONS)
-                    .executes(context -> exportWorlds(context.getSource(), Collections.singletonList(ResourceLocationArgument.getId(context, "id"))))
+                    .executes(context -> exportWorlds(context.getSource(), Collections.singletonList(IdentifierArgument.getId(context, "id"))))
             );
     }
 
-    public static int exportWorlds(CommandSourceStack source, Collection<ResourceLocation> ids) {
+    public static int exportWorlds(CommandSourceStack source, Collection<Identifier> ids) {
         try {
             Path exportFile = FabricLoader.getInstance().getGameDir().resolve("export.zip");
             if (Files.exists(exportFile)) {
@@ -75,7 +75,7 @@ public class ExportCommand {
             MinecraftServer server = source.getServer();
             CompoundTag dimensionsTag = new CompoundTag();
 
-            for (ResourceLocation id : ids) {
+            for (Identifier id : ids) {
                 ResourceKey<Level> key = ResourceKey.create(Registries.DIMENSION, id);
                 ServerLevel level = server.getLevel(key);
 

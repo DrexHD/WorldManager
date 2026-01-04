@@ -5,9 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static me.drex.worldmanager.command.WorldManagerCommand.CUSTOM_WORLD_SUGGESTIONS;
 import static me.drex.worldmanager.command.WorldManagerCommand.UNKNOWN_WORLD;
@@ -19,13 +19,13 @@ public class DeleteCommand {
         return literal("delete")
             .requires(Permissions.require("worldmanager.command.worldmanager.delete", 2))
             .then(
-                argument("id", ResourceLocationArgument.id())
+                argument("id", IdentifierArgument.id())
                     .suggests(CUSTOM_WORLD_SUGGESTIONS)
-                    .executes(context -> delete(context.getSource(), ResourceLocationArgument.getId(context, "id")))
+                    .executes(context -> delete(context.getSource(), IdentifierArgument.getId(context, "id")))
             );
     }
 
-    public static int delete(CommandSourceStack source, ResourceLocation id) throws CommandSyntaxException {
+    public static int delete(CommandSourceStack source, Identifier id) throws CommandSyntaxException {
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(source.getServer());
         boolean success = savedData.removeWorld(id);
 

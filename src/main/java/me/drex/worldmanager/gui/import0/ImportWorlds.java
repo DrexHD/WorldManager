@@ -8,19 +8,19 @@ import me.drex.worldmanager.gui.util.PagedGui;
 import me.drex.worldmanager.save.WorldConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 
 import java.util.*;
 
-public class ImportWorlds extends PagedGui<ResourceLocation> {
-    private final Map<ResourceLocation, WorldConfig> availableWorlds;
+public class ImportWorlds extends PagedGui<Identifier> {
+    private final Map<Identifier, WorldConfig> availableWorlds;
     private final ArchiveExtractor archiveExtractor;
-    private final Map<ResourceLocation, ResourceLocation> importWorldIds;
+    private final Map<Identifier, Identifier> importWorldIds;
 
-    public ImportWorlds(ServerPlayer player, Map<ResourceLocation, WorldConfig> availableWorlds, ArchiveExtractor archiveExtractor) {
+    public ImportWorlds(ServerPlayer player, Map<Identifier, WorldConfig> availableWorlds, ArchiveExtractor archiveExtractor) {
         super(MenuType.GENERIC_9x6, player);
         this.availableWorlds = availableWorlds;
         this.archiveExtractor = archiveExtractor;
@@ -59,12 +59,12 @@ public class ImportWorlds extends PagedGui<ResourceLocation> {
     }
 
     @Override
-    protected List<ResourceLocation> elements() {
+    protected List<Identifier> elements() {
         return new LinkedList<>(availableWorlds.keySet());
     }
 
     @Override
-    protected GuiElementBuilder toGuiElement(ResourceLocation id) {
+    protected GuiElementBuilder toGuiElement(Identifier id) {
         boolean hasId = importWorldIds.containsKey(id);
         var builder = new GuiElementBuilder(Items.STONE)
             .hideDefaultTooltip()

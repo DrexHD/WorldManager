@@ -2,7 +2,7 @@ package me.drex.worldmanager.extractor;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -32,9 +32,9 @@ public class TarGzArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<ResourceLocation, WorldConfig> open(Path tarGzPath, MinecraftServer server) throws IOException, CommandSyntaxException {
+    public Map<Identifier, WorldConfig> open(Path tarGzPath, MinecraftServer server) throws IOException, CommandSyntaxException {
         this.tarGzPath = tarGzPath;
-        Map<ResourceLocation, WorldConfig> configs = Collections.emptyMap();
+        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
         try (InputStream fi = Files.newInputStream(tarGzPath);
              InputStream bi = new BufferedInputStream(fi);
              InputStream gzi = new GzipCompressorInputStream(bi);

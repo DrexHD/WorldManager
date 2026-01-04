@@ -11,14 +11,14 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.CompoundTagArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -34,9 +34,9 @@ public class CreateCommand {
         return literal("create")
             .requires(Permissions.require("worldmanager.command.worldmanager.create", 2))
             .then(
-                argument("id", ResourceLocationArgument.id())
+                argument("id", IdentifierArgument.id())
                     .executes(context -> {
-                        ResourceLocation id = ResourceLocationArgument.getId(context, "id");
+                        Identifier id = IdentifierArgument.getId(context, "id");
                         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
                         MinecraftServer server = context.getSource().getServer();
                         ServerLevel level = server.getLevel(resourceKey);
@@ -49,7 +49,7 @@ public class CreateCommand {
                     }).then(
                         argument("nbt", CompoundTagArgument.compoundTag())
                             .executes(context -> {
-                                ResourceLocation id = ResourceLocationArgument.getId(context, "id");
+                                Identifier id = IdentifierArgument.getId(context, "id");
                                 MinecraftServer server = context.getSource().getServer();
                                 validLevelId(id, server);
 
@@ -78,7 +78,7 @@ public class CreateCommand {
             );
     }
 
-    public static void validLevelId(ResourceLocation id, MinecraftServer server) throws CommandSyntaxException {
+    public static void validLevelId(Identifier id, MinecraftServer server) throws CommandSyntaxException {
         ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, id);
         ServerLevel level = server.getLevel(resourceKey);
         if (level != null) {

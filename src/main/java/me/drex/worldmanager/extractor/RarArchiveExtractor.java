@@ -6,7 +6,7 @@ import com.github.junrar.exception.UnsupportedRarV5Exception;
 import com.github.junrar.rarfile.FileHeader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FilenameUtils;
 
@@ -32,8 +32,8 @@ public class RarArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<ResourceLocation, WorldConfig> open(Path rarPath, MinecraftServer server) throws IOException, CommandSyntaxException {
-        Map<ResourceLocation, WorldConfig> configs = Collections.emptyMap();
+    public Map<Identifier, WorldConfig> open(Path rarPath, MinecraftServer server) throws IOException, CommandSyntaxException {
+        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
         try {
             archive = new Archive(Files.newInputStream(rarPath));
             List<FileHeader> fileHeaders = archive.getFileHeaders();

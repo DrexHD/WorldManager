@@ -5,7 +5,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
 //? if >= 1.21.5 {
@@ -20,9 +20,9 @@ import java.util.Map;
 
 public class WorldManagerSavedData extends SavedData {
 
-    private final Map<ResourceLocation, WorldConfig> worlds;
-    private final Map<ResourceLocation, RuntimeWorldHandle> worldHandles = new HashMap<>();
-    private static final Codec<WorldManagerSavedData> CODEC = Codec.unboundedMap(ResourceLocation.CODEC, WorldConfig.CODEC)
+    private final Map<Identifier, WorldConfig> worlds;
+    private final Map<Identifier, RuntimeWorldHandle> worldHandles = new HashMap<>();
+    private static final Codec<WorldManagerSavedData> CODEC = Codec.unboundedMap(Identifier.CODEC, WorldConfig.CODEC)
         .xmap(WorldManagerSavedData::new, worldManagerSavedData -> worldManagerSavedData.worlds);
 
     //? if >= 1.21.5 {
@@ -33,7 +33,7 @@ public class WorldManagerSavedData extends SavedData {
         this.worlds = new HashMap<>();
     }
 
-    private WorldManagerSavedData(Map<ResourceLocation, WorldConfig> worlds) {
+    private WorldManagerSavedData(Map<Identifier, WorldConfig> worlds) {
         this.worlds = new HashMap<>(worlds);
     }
 
@@ -67,13 +67,13 @@ public class WorldManagerSavedData extends SavedData {
         });
     }
 
-    public void addWorld(ResourceLocation id, WorldConfig config, RuntimeWorldHandle handle) {
+    public void addWorld(Identifier id, WorldConfig config, RuntimeWorldHandle handle) {
         worlds.put(id, config);
         worldHandles.put(id, handle);
         setDirty();
     }
 
-    public boolean removeWorld(ResourceLocation id) {
+    public boolean removeWorld(Identifier id) {
         WorldConfig config = worlds.remove(id);
         if (config != null) {
             RuntimeWorldHandle handle = worldHandles.remove(id);
@@ -84,11 +84,11 @@ public class WorldManagerSavedData extends SavedData {
         return false;
     }
 
-    public WorldConfig getConfig(ResourceLocation id) {
+    public WorldConfig getConfig(Identifier id) {
         return worlds.get(id);
     }
 
-    public Map<ResourceLocation, WorldConfig> getWorlds() {
+    public Map<Identifier, WorldConfig> getWorlds() {
         return new HashMap<>(worlds);
     }
 

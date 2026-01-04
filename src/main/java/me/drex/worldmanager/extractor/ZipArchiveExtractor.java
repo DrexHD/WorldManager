@@ -1,7 +1,7 @@
 package me.drex.worldmanager.extractor;
 
 import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FilenameUtils;
 
@@ -27,8 +27,8 @@ public class ZipArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<ResourceLocation, WorldConfig> open(Path zipPath, MinecraftServer server) throws IOException {
-        Map<ResourceLocation, WorldConfig> configs = Collections.emptyMap();
+    public Map<Identifier, WorldConfig> open(Path zipPath, MinecraftServer server) throws IOException {
+        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
         zipFile = new ZipFile(zipPath.toFile());
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {

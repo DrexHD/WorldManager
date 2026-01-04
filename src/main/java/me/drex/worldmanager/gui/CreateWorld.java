@@ -6,13 +6,13 @@ import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.drex.worldmanager.util.VersionUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 public class CreateWorld extends ConfigureWorld {
-    public CreateWorld(ServerPlayer player, ResourceLocation id) {
+    public CreateWorld(ServerPlayer player, Identifier id) {
         super(player, id);
     }
 

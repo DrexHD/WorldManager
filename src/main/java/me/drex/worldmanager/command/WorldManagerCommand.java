@@ -17,7 +17,7 @@ public class WorldManagerCommand {
 
     public static final SuggestionProvider<CommandSourceStack> WORLD_SUGGESTIONS = (context, builder) ->
         SharedSuggestionProvider.suggestResource(
-            context.getSource().getServer().levelKeys().stream().map(ResourceKey::location), builder
+            context.getSource().getServer().levelKeys().stream().map(resourceKey -> resourceKey.identifier()), builder
         );
 
     public static final SuggestionProvider<CommandSourceStack> CUSTOM_WORLD_SUGGESTIONS = (context, builder) ->

@@ -2,9 +2,9 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ChangelogPluginExtension
 
 plugins {
-    id("fabric-loom") version "1.11-SNAPSHOT"
+    id("fabric-loom") version "1.14-SNAPSHOT"
     id("maven-publish")
-    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
     id("org.jetbrains.changelog")
 }
 
@@ -59,6 +59,14 @@ dependencies {
 
     includeDep("com.github.junrar:junrar:${findProperty("junrar_version")}")
     includeDep("org.apache.commons:commons-compress:${findProperty("apache_common_compress_version")}")
+}
+
+stonecutter {
+    replacements.string(eval(current.version, "<=1.21.10")) {
+        replace("Identifier", "ResourceLocation")
+        replace("net.minecraft.util.Util", "net.minecraft.Util")
+        replace("identifier()", "location()")
+    }
 }
 
 publishMods {

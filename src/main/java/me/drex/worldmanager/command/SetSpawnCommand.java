@@ -8,7 +8,7 @@ import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.phys.Vec3;
 
@@ -27,7 +27,7 @@ public class SetSpawnCommand {
     public static int setSpawn(CommandSourceStack source) throws CommandSyntaxException {
         MinecraftServer server = source.getServer();
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
-        ResourceLocation id = source.getLevel().dimension().location();
+        Identifier id = source.getLevel().dimension().identifier();
         WorldConfig config = savedData.getConfig(id);
 
         if (config == null) {

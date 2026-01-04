@@ -1,7 +1,7 @@
 package me.drex.worldmanager.extractor;
 
 import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.IOException;
@@ -24,8 +24,8 @@ public class FolderArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<ResourceLocation, WorldConfig> open(Path folderPath, MinecraftServer server) throws IOException {
-        Map<ResourceLocation, WorldConfig> configs = Collections.emptyMap();
+    public Map<Identifier, WorldConfig> open(Path folderPath, MinecraftServer server) throws IOException {
+        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
         try (Stream<Path> pathStream = Files.find(folderPath, 10, (path, basicFileAttributes) -> path.getFileName().toString().equals(LEVEL_DATA_FILE.getId()))) {
             Optional<Path> first = pathStream.findFirst();
             if (first.isPresent()) {

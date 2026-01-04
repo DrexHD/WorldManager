@@ -8,14 +8,14 @@ import me.drex.worldmanager.save.WorldManagerSavedData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 
 import java.util.List;
 import java.util.Map;
 
-public class WorldList extends PagedGui<Map.Entry<ResourceLocation, WorldConfig>> {
+public class WorldList extends PagedGui<Map.Entry<Identifier, WorldConfig>> {
     public WorldList(ServerPlayer player) {
         super(MenuType.GENERIC_9x6, player);
         setTitle(Component.literal("World List"));
@@ -23,14 +23,14 @@ public class WorldList extends PagedGui<Map.Entry<ResourceLocation, WorldConfig>
     }
 
     @Override
-    protected List<Map.Entry<ResourceLocation, WorldConfig>> elements() {
+    protected List<Map.Entry<Identifier, WorldConfig>> elements() {
         return WorldManagerSavedData.getSavedData(player.level().getServer()).getWorlds().entrySet().stream().toList();
     }
 
     @Override
-    protected GuiElementBuilder toGuiElement(Map.Entry<ResourceLocation, WorldConfig> entry) {
+    protected GuiElementBuilder toGuiElement(Map.Entry<Identifier, WorldConfig> entry) {
         WorldConfig config = entry.getValue();
-        ResourceLocation id = entry.getKey();
+        Identifier id = entry.getKey();
         return config.data.iconGuiElement().setName(Component.literal(id.toString()).withStyle(ChatFormatting.YELLOW))
             .addLoreLine(Component.literal("Left Click to teleport!").withStyle(ChatFormatting.GRAY))
             .addLoreLine(Component.literal("Right Click to manage world!").withStyle(ChatFormatting.GRAY))

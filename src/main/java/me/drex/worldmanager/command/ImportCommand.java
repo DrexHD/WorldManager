@@ -26,7 +26,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -99,7 +99,7 @@ public class ImportCommand {
         ServerPlayer player = source.getPlayerOrException();
 
         Path fullPath = FabricLoader.getInstance().getGameDir().resolve(localPath);
-        Map<ResourceLocation, WorldConfig> worldConfigs;
+        Map<Identifier, WorldConfig> worldConfigs;
         try {
             Optional<ArchiveExtractor> extractor = EXTRACTORS.stream()
                 .filter(e -> e.supports(fullPath))
@@ -119,13 +119,13 @@ public class ImportCommand {
         }
     }
 
-    public static int importWorlds(CommandSourceStack source, Map<ResourceLocation, WorldConfig> worldConfigs, Map<ResourceLocation, ResourceLocation> importWorldIds, ArchiveExtractor archiveExtractor) throws CommandSyntaxException {
+    public static int importWorlds(CommandSourceStack source, Map<Identifier, WorldConfig> worldConfigs, Map<Identifier, Identifier> importWorldIds, ArchiveExtractor archiveExtractor) throws CommandSyntaxException {
         MinecraftServer server = source.getServer();
         Fantasy fantasy = Fantasy.get(server);
 
-        for (Map.Entry<ResourceLocation, ResourceLocation> entry : importWorldIds.entrySet()) {
-            ResourceLocation originalId = entry.getKey();
-            ResourceLocation newId = entry.getValue();
+        for (Map.Entry<Identifier, Identifier> entry : importWorldIds.entrySet()) {
+            Identifier originalId = entry.getKey();
+            Identifier newId = entry.getValue();
 
             ResourceKey<Level> resourceKey = ResourceKey.create(Registries.DIMENSION, newId);
             ServerLevel level = server.getLevel(resourceKey);
@@ -160,7 +160,7 @@ public class ImportCommand {
     }
 
     //? if >= 1.21.5 {
-    public static Map<ResourceLocation, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
+    public static Map<Identifier, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
 
         Optional<CompoundTag> unfixedData = tag.getCompound("Data");
@@ -177,9 +177,9 @@ public class ImportCommand {
                 long seed = worldGenSettings.getLongOr("seed", 0);
                 return worldGenSettings.getCompound("dimensions")
                     .map(compoundTag -> {
-                        Stream<Map.Entry<ResourceLocation, Optional<WorldConfig>>> stream = compoundTag.entrySet().stream().map(stringTagEntry -> {
+                        Stream<Map.Entry<Identifier, Optional<WorldConfig>>> stream = compoundTag.entrySet().stream().map(stringTagEntry -> {
                             String dimensionKey = stringTagEntry.getKey();
-                            ResourceLocation id = ResourceLocation.tryParse(dimensionKey);
+                            Identifier id = Identifier.tryParse(dimensionKey);
                             return Map.entry(id, createWorldConfig(server, stringTagEntry.getValue(), spawnX, spawnY, spawnZ, spawnAngle, seed));
                         }).filter(entry -> entry.getKey() != null && entry.getValue().isPresent());
                         return stream.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElseThrow()));
@@ -187,8 +187,8 @@ public class ImportCommand {
             }).orElse(Collections.emptyMap());
     }
     //?} else {
-    /*public static Map<ResourceLocation, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
-        Map<ResourceLocation, WorldConfig> configs = new HashMap<>();
+    /*public static Map<Identifier, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
+        Map<Identifier, WorldConfig> configs = new HashMap<>();
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
         var unfixedData = tag.getCompound("Data");
 //        var data = fixLevelData(unfixedData).orElse(unfixedData);
@@ -204,7 +204,7 @@ public class ImportCommand {
         for (String dimensionKey : dimensions.getAllKeys()) {
             var dimension = dimensions.getCompound(dimensionKey);
             Optional<WorldConfig> worldConfig = createWorldConfig(server, dimension, spawnX, spawnY, spawnZ, spawnAngle, seed);
-            ResourceLocation resourceLocation = ResourceLocation.tryParse(dimensionKey);
+            Identifier resourceLocation = Identifier.tryParse(dimensionKey);
 
             if (resourceLocation != null && worldConfig.isPresent()) {
                 configs.put(resourceLocation, worldConfig.get());
