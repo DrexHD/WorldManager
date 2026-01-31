@@ -16,7 +16,7 @@ public class WorldData {
 
     public Optional<Location> spawnLocation = Optional.empty();
     public ItemStack icon = ItemStack.EMPTY;
-    public Map<Identifier, Identifier> portals = Map.of();
+    public Map<Identifier, Identifier> portals = new HashMap<>();
 
     public static final Codec<WorldData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Location.CODEC.optionalFieldOf("spawn_location").forGetter(worldData -> worldData.spawnLocation),
