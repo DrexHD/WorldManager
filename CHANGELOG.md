@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-02-02
+### Changed
+- Root command permission node from `worldmanager.command.worldmanager` to `worldmanager.command.worldmanager.root`
+
 ## [1.4.1] - 2026-01-31
 ### Changed
 - Improved last location logic

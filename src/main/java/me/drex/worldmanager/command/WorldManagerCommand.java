@@ -32,7 +32,7 @@ public class WorldManagerCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext) {
         var root = dispatcher.register(
             literal("worldmanager")
-                .requires(Permissions.require("worldmanager.command.worldmanager", 2))
+                .requires(Permissions.require("worldmanager.command.worldmanager.root", 2))
                 .then(DeleteCommand.build())
                 .then(SpawnCommand.build())
                 .then(SetIconCommand.build(commandBuildContext))
@@ -48,7 +48,7 @@ public class WorldManagerCommand {
 
         dispatcher.register(
             literal("wm")
-                .requires(Permissions.require("worldmanager.command.worldmanager", 2))
+                .requires(Permissions.require("worldmanager.command.worldmanager.root", 2))
                 .redirect(root)
         );
     }
