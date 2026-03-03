@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-03-03
+### Fixed
+- Nether portal search range
+
 ## [1.4.2] - 2026-02-02
 ### Changed
 - Root command permission node from `worldmanager.command.worldmanager` to `worldmanager.command.worldmanager.root`

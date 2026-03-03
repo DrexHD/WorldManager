@@ -44,7 +44,7 @@ public abstract class NetherPortalBlockMixin {
         ),
         index = 4
     )
-    public boolean adjustSearchRange(boolean original, @Local(argsOnly = true) ServerLevel serverLevel) {
+    public boolean adjustSearchRange(boolean original, @Local(index = 5) ServerLevel serverLevel) {
         return serverLevel.dimensionType().coordinateScale() >= 8;
     }
 }
