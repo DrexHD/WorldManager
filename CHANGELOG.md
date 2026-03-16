@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.4] - 2026-03-16
+### Changed
+- Inherit difficulty and gamerules from overworld
+
 ## [1.4.3] - 2026-03-03
 ### Fixed
 - Nether portal search range

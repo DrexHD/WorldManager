@@ -37,6 +37,8 @@ public final class WorldConfig {
             .setGenerator(generator)
             .setDimensionType(type)
             .setSeed(seed)
+            .setMirrorOverworldGameRules(true)
+            .setMirrorOverworldDifficulty(true)
             .setShouldTickTime(tickTime);
     }
 }
