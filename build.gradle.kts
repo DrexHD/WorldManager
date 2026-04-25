@@ -2,7 +2,7 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ChangelogPluginExtension
 
 plugins {
-    id("fabric-loom") version "1.14-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
     id("maven-publish")
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
     id("org.jetbrains.changelog")
@@ -32,10 +32,6 @@ loom {
     }
 }
 
-fun DependencyHandlerScope.includeMod(dep: String) {
-    include(modImplementation(dep)!!)
-}
-
 fun DependencyHandlerScope.includeDep(dep: String) {
     include(implementation(dep)!!)
 }
@@ -43,34 +39,25 @@ fun DependencyHandlerScope.includeDep(dep: String) {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${findProperty("minecraft_version")}")
-    mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${findProperty("loader_version")}")
+    implementation("net.fabricmc:fabric-loader:${findProperty("loader_version")}")
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${findProperty("fabric_version")}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${findProperty("fabric_version")}")
 
-    includeMod("xyz.nucleoid:fantasy:${findProperty("fantasy_version")}")
+    includeDep("xyz.nucleoid:fantasy:${findProperty("fantasy_version")}")
 
-    includeMod("me.lucko:fabric-permissions-api:${findProperty("permission_api_version")}")
+    includeDep("me.lucko:fabric-permissions-api:${findProperty("permission_api_version")}")
 
-    includeMod("eu.pb4:sgui:${findProperty("sgui_version")}")
+    includeDep("eu.pb4:sgui:${findProperty("sgui_version")}")
 
-    includeMod("eu.pb4:placeholder-api:${findProperty("placeholder_api_version")}")
-    includeMod("eu.pb4:player-data-api:${findProperty("player_data_api_version")}")
+    includeDep("eu.pb4:placeholder-api:${findProperty("placeholder_api_version")}")
+    includeDep("eu.pb4:player-data-api:${findProperty("player_data_api_version")}")
 
     includeDep("com.github.junrar:junrar:${findProperty("junrar_version")}")
     includeDep("org.apache.commons:commons-compress:${findProperty("apache_common_compress_version")}")
 }
 
-stonecutter {
-    replacements.string(eval(current.version, "<=1.21.10")) {
-        replace("Identifier", "ResourceLocation")
-        replace("net.minecraft.util.Util", "net.minecraft.Util")
-        replace("identifier()", "location()")
-    }
-}
-
 publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
+    file.set(tasks.jar.get().archiveFile)
     type.set(STABLE)
     changelog.set(fetchChangelog())
 

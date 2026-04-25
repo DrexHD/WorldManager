@@ -17,7 +17,7 @@ import java.util.Collections;
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin {
     @Shadow
-    public abstract ServerLevel /*? if >= 1.21.6 {*/ level() /*?} else {*/ /*serverLevel() *//*?}*/;
+    public abstract ServerLevel level();
 
     @Inject(method = "doTick", at = @At("HEAD"))
     public void saveLocation(CallbackInfo ci) {
@@ -27,6 +27,6 @@ public abstract class ServerPlayerMixin {
             playerData = new PlayerData(Collections.emptyMap());
             PlayerDataApi.setCustomDataFor(player, WorldManager.STORAGE, playerData);
         }
-        playerData.locations().put(/*? if >= 1.21.6 {*/ level() /*?} else {*/ /*serverLevel() *//*?}*/.dimension(), new Location(player));
+        playerData.locations().put(level().dimension(), new Location(player));
     }
 }

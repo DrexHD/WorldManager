@@ -28,7 +28,7 @@ public class ChooseId extends AnvilInputGui {
         setSlot(1,
             new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setName(Component.literal("Back!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
-                .setSkullOwner(SkullTextures.BACKWARD)
+                .setProfileSkinTexture(SkullTextures.BACKWARD)
                 .setCallback(previousGui::open)
         );
     }

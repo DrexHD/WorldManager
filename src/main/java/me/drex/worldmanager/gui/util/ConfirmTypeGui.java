@@ -27,7 +27,7 @@ public class ConfirmTypeGui extends AnvilInputGui {
             setSlot(2,
                 new GuiElementBuilder(Items.PLAYER_HEAD)
                     .setName(Component.literal("Confirm!").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
-                    .setSkullOwner(SkullTextures.CHECKMARK)
+                    .setProfileSkinTexture(SkullTextures.CHECKMARK)
                     .setCallback(action)
             );
         } else {
@@ -36,7 +36,7 @@ public class ConfirmTypeGui extends AnvilInputGui {
         setSlot(1,
             new GuiElementBuilder(Items.PLAYER_HEAD)
                 .setName(Component.literal("Cancel!").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
-                .setSkullOwner(SkullTextures.BACKWARD)
+                .setProfileSkinTexture(SkullTextures.BACKWARD)
                 .setCallback(previousGui::open)
         );
     }

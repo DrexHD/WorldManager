@@ -51,7 +51,7 @@ public abstract class PagedGui<T> extends SimpleGui {
         var slots = getVirtualSize() - WIDTH;
         return switch (index) {
             case 0 -> new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(SkullTextures.ARROW_LEFT)
+                .setProfileSkinTexture(SkullTextures.ARROW_LEFT)
                 .setName(Component.literal("Next Page").withStyle(ChatFormatting.YELLOW))
                 .setCallback(() -> {
                     page = Math.max(page - 1, 0);
@@ -59,7 +59,7 @@ public abstract class PagedGui<T> extends SimpleGui {
                 });
             case 4 -> GuiElements.back(previousGui);
             case 8 -> new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(SkullTextures.ARROW_RIGHT)
+                .setProfileSkinTexture(SkullTextures.ARROW_RIGHT)
                 .setName(Component.literal("Previous Page").withStyle(ChatFormatting.YELLOW))
                 .setCallback(() -> {
                     var maxPage = (elements().size() - 1) / slots;

@@ -11,6 +11,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -49,7 +50,7 @@ public abstract class ConfigureWorld extends SimpleGui {
             new GuiElementBuilder(Items.ARMOR_STAND)
                 .setName(Component.literal("Dimension Type").withStyle(ChatFormatting.GREEN))
                 .addLoreLine(Component.literal("World height, sky light, beds working, ...").withStyle(ChatFormatting.GRAY))
-                .addLoreLine(Component.literal("Current: ").withStyle(ChatFormatting.GRAY).append(Component.literal(type.unwrapKey().map(resourceKey -> resourceKey.identifier()).map(Identifier::toString).orElse("???")).withStyle(ChatFormatting.GOLD)))
+                .addLoreLine(Component.literal("Current: ").withStyle(ChatFormatting.GRAY).append(Component.literal(type.unwrapKey().map(ResourceKey::identifier).map(Identifier::toString).orElse("???")).withStyle(ChatFormatting.GOLD)))
                 .setCallback(() -> {
                     new SelectDimensionType(player, this, type -> {
                         this.type = type;
@@ -61,7 +62,7 @@ public abstract class ConfigureWorld extends SimpleGui {
             new GuiElementBuilder(Items.GRASS_BLOCK)
                 .setName(Component.literal("Chunk Generator").withStyle(ChatFormatting.GREEN))
                 .addLoreLine(Component.literal("How the world is shaped").withStyle(ChatFormatting.GRAY))
-                .addLoreLine(Component.literal("Current: ").withStyle(ChatFormatting.GRAY).append(Component.literal(generator.getTypeNameForDataFixer().map(resourceKey -> resourceKey.identifier()).map(Identifier::toString).orElse("???")).withStyle(ChatFormatting.GOLD)))
+                .addLoreLine(Component.literal("Current: ").withStyle(ChatFormatting.GRAY).append(Component.literal(generator.getTypeNameForDataFixer().map(Identifier::toString).orElse("???")).withStyle(ChatFormatting.GOLD)))
                 .setCallback(() -> {
                     new SelectChunkGenerator(player, this, generator -> {
                         this.generator = generator;

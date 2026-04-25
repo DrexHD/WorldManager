@@ -6,7 +6,7 @@ import me.drex.worldmanager.util.CodecUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+import xyz.nucleoid.fantasy.RuntimeLevelConfig;
 
 // TODO Save world time
 public final class WorldConfig {
@@ -32,8 +32,8 @@ public final class WorldConfig {
         this.data = data;
     }
 
-    public RuntimeWorldConfig toRuntimeWorldConfig() {
-        return new RuntimeWorldConfig()
+    public RuntimeLevelConfig toRuntimeLevelConfig() {
+        return new RuntimeLevelConfig()
             .setGenerator(generator)
             .setDimensionType(type)
             .setSeed(seed)

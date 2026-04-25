@@ -10,7 +10,7 @@ public class GuiElements {
     public static GuiElementBuilder back(SimpleGui previousGui) {
         if (previousGui != null) {
             return new GuiElementBuilder(Items.PLAYER_HEAD)
-                .setSkullOwner(SkullTextures.BACKWARD)
+                .setProfileSkinTexture(SkullTextures.BACKWARD)
                 .setCallback(previousGui::open)
                 .setName(Component.literal("Back").withStyle(ChatFormatting.RED));
         } else {

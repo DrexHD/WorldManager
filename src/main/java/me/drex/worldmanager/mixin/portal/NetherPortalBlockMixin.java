@@ -36,15 +36,11 @@ public abstract class NetherPortalBlockMixin {
         method = "getPortalDestination",
         at = @At(
             value = "INVOKE",
-            //? if >= 1.21.2 {
             target = "Lnet/minecraft/world/level/block/NetherPortalBlock;getExitPortal(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/level/border/WorldBorder;)Lnet/minecraft/world/level/portal/TeleportTransition;"
-            //? } else {
-            /*target = "Lnet/minecraft/world/level/block/NetherPortalBlock;getExitPortal(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/level/border/WorldBorder;)Lnet/minecraft/world/level/portal/DimensionTransition;"
-            *///? }
         ),
         index = 4
     )
-    public boolean adjustSearchRange(boolean original, @Local(index = 5) ServerLevel serverLevel) {
+    public boolean adjustSearchRange(boolean original, @Local(name = "newLevel") ServerLevel serverLevel) {
         return serverLevel.dimensionType().coordinateScale() >= 8;
     }
 }

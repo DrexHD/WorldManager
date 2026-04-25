@@ -40,7 +40,7 @@ public class RarArchiveExtractor implements ArchiveExtractor {
             for (FileHeader fileHeader : fileHeaders) {
                 String fileName = fileHeader.getFileName().replace('\\', '/');
                 Path path = Paths.get(fileName);
-                if (path.getFileName().toString().equals(LEVEL_DATA_FILE.getId())) {
+                if (path.getFileName().toString().equals(LEVEL_DATA_FILE.id())) {
                     Path parent = path.getParent();
                     if (parent != null) root = parent;
 

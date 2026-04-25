@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import me.drex.worldmanager.gui.CreateWorld;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldManagerSavedData;
-import me.drex.worldmanager.util.VersionUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,6 +14,7 @@ import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
@@ -23,7 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import xyz.nucleoid.fantasy.Fantasy;
-import xyz.nucleoid.fantasy.RuntimeWorldHandle;
+import xyz.nucleoid.fantasy.RuntimeLevelHandle;
 
 import static me.drex.worldmanager.command.WorldManagerCommand.ALREADY_EXISTS;
 import static net.minecraft.commands.Commands.argument;
@@ -60,7 +60,7 @@ public class CreateCommand {
 
                                 Fantasy fantasy = Fantasy.get(server);
 
-                                RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(id, config.toRuntimeWorldConfig());
+                                RuntimeLevelHandle handle = fantasy.getOrOpenPersistentLevel(id, config.toRuntimeLevelConfig());
 
                                 WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
                                 savedData.addWorld(id, config, handle);
@@ -69,7 +69,7 @@ public class CreateCommand {
                                         .append(Component.literal("World " + id + " has been created successfully. "))
                                         .append(Component.literal("Click to teleport!").withStyle(style ->
                                                 style.withColor(ChatFormatting.AQUA).withUnderlined(true)
-                                                    .withClickEvent(VersionUtil.runCommand("/wm tp " + id))
+                                                    .withClickEvent(new ClickEvent.RunCommand("/wm tp " + id))
                                             )
                                         ), false);
                                 return 1;

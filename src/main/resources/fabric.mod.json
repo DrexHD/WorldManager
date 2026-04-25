@@ -19,8 +19,8 @@
 		"worldmanager.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.17.0",
-		"java": ">=21",
+		"fabricloader": ">=0.18.6",
+		"java": ">=25",
 		"fabric-api": "*"
 	}
 }

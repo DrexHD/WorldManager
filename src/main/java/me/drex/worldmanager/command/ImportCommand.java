@@ -38,17 +38,15 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.io.FilenameUtils;
 import xyz.nucleoid.fantasy.Fantasy;
-import xyz.nucleoid.fantasy.RuntimeWorldHandle;
+import xyz.nucleoid.fantasy.RuntimeLevelHandle;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-//? if >= 1.21.5 {
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-//? }
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -146,7 +144,7 @@ public class ImportCommand {
                 throw IO_EXCEPTION.create(newId.toString());
             }
 
-            RuntimeWorldHandle handle = fantasy.getOrOpenPersistentWorld(newId, config.toRuntimeWorldConfig());
+            RuntimeLevelHandle handle = fantasy.getOrOpenPersistentLevel(newId, config.toRuntimeLevelConfig());
             WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(server);
             savedData.addWorld(newId, config, handle);
         }
@@ -159,7 +157,6 @@ public class ImportCommand {
         return 1;
     }
 
-    //? if >= 1.21.5 {
     public static Map<Identifier, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
 
@@ -186,33 +183,6 @@ public class ImportCommand {
                     });
             }).orElse(Collections.emptyMap());
     }
-    //?} else {
-    /*public static Map<Identifier, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
-        Map<Identifier, WorldConfig> configs = new HashMap<>();
-        CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
-        var unfixedData = tag.getCompound("Data");
-//        var data = fixLevelData(unfixedData).orElse(unfixedData);
-        var data = unfixedData;
-
-        var spawnX = data.getInt("SpawnX");
-        var spawnY = data.getInt("SpawnY");
-        var spawnZ = data.getInt("SpawnZ");
-        var spawnAngle = data.getFloat("SpawnAngle");
-        var worldGenSettings = data.getCompound("WorldGenSettings");
-        long seed = worldGenSettings.getLong("seed");
-        CompoundTag dimensions = worldGenSettings.getCompound("dimensions");
-        for (String dimensionKey : dimensions.getAllKeys()) {
-            var dimension = dimensions.getCompound(dimensionKey);
-            Optional<WorldConfig> worldConfig = createWorldConfig(server, dimension, spawnX, spawnY, spawnZ, spawnAngle, seed);
-            Identifier resourceLocation = Identifier.tryParse(dimensionKey);
-
-            if (resourceLocation != null && worldConfig.isPresent()) {
-                configs.put(resourceLocation, worldConfig.get());
-            }
-        }
-        return configs;
-    }
-    *///?}
 
     public static Optional<CompoundTag> fixLevelData(CompoundTag levelData) {
         int dataVersion = NbtUtils.getDataVersion(levelData, -1);

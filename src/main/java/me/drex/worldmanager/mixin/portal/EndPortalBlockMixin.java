@@ -46,15 +46,9 @@ public abstract class EndPortalBlockMixin {
     )
     public ResourceKey<Level> deHardCodeEndDimension(ServerLevel instance, Operation<ResourceKey> original) {
         DimensionType dimensionType = instance.dimensionType();
-        //? if >= 1.21.11 {
         if (dimensionType.skybox() == DimensionType.Skybox.END) {
             return Level.END;
         }
-        //? } else {
-        /*if (!dimensionType.bedWorks() && !dimensionType.respawnAnchorWorks()) {
-            return Level.END;
-        }
-        *///? }
         return original.call(instance);
 
     }

@@ -29,7 +29,7 @@ public class SetIconCommand {
                     .suggests(WORLD_SUGGESTIONS)
                     .then(
                         Commands.argument("icon", ItemArgument.item(commandBuildContext))
-                            .executes(context -> setIcon(context.getSource(), IdentifierArgument.getId(context, "id"), ItemArgument.getItem(context, "icon").createItemStack(1, false)))
+                            .executes(context -> setIcon(context.getSource(), IdentifierArgument.getId(context, "id"), ItemArgument.getItem(context, "icon").createItemStack(1)))
                     ).executes(context -> setIcon(context.getSource(), IdentifierArgument.getId(context, "id"), context.getSource().getPlayerOrException().getMainHandItem()))
             );
     }

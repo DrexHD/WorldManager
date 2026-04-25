@@ -26,7 +26,7 @@ public class FolderArchiveExtractor implements ArchiveExtractor {
     @Override
     public Map<Identifier, WorldConfig> open(Path folderPath, MinecraftServer server) throws IOException {
         Map<Identifier, WorldConfig> configs = Collections.emptyMap();
-        try (Stream<Path> pathStream = Files.find(folderPath, 10, (path, basicFileAttributes) -> path.getFileName().toString().equals(LEVEL_DATA_FILE.getId()))) {
+        try (Stream<Path> pathStream = Files.find(folderPath, 10, (path, _) -> path.getFileName().toString().equals(LEVEL_DATA_FILE.id()))) {
             Optional<Path> first = pathStream.findFirst();
             if (first.isPresent()) {
                 Path parent = first.get().getParent();

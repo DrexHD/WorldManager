@@ -1,20 +1,21 @@
 {
-  "required": true,
-  "package": "me.drex.worldmanager.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "mixinextras": {
-    "minVersion": "0.5.0-rc.1"
-  },
-  "mixins": [
-    "ExecuteCommandMixin",
-    "MinecraftServerAccessor",
-    "MinecraftServerMixin",
-    "ServerPlayerMixin",
-    "portal.BaseFireBlockMixin",
-    "portal.EndPortalBlockMixin",
-    "portal.NetherPortalBlockMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+	"required": true,
+	"package": "me.drex.worldmanager.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixinextras": {
+		"minVersion": "0.5.0-rc.1"
+	},
+	"mixins": [
+		"ExecuteCommandMixin",
+		"MinecraftServerAccessor",
+		"MinecraftServerMixin",
+		"DimensionStorageFileFixMixin",
+		"ServerPlayerMixin",
+		"portal.BaseFireBlockMixin",
+		"portal.EndPortalBlockMixin",
+		"portal.NetherPortalBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
 }

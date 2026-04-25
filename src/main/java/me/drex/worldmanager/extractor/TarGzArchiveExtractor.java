@@ -43,7 +43,7 @@ public class TarGzArchiveExtractor implements ArchiveExtractor {
             TarArchiveEntry entry;
             while ((entry = tarIn.getNextEntry()) != null) {
                 Path entryPath = Paths.get(entry.getName());
-                if (entryPath.getFileName().toString().equals(LEVEL_DATA_FILE.getId())) {
+                if (entryPath.getFileName().toString().equals(LEVEL_DATA_FILE.id())) {
                     Path parent = entryPath.getParent();
                     if (parent != null) root = parent;
 
