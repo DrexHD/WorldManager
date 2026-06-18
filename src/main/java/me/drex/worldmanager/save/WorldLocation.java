@@ -9,7 +9,11 @@ import java.util.Collections;
 
 public record WorldLocation(ServerLevel level, Location location) {
     public static WorldLocation findSpawn(ServerLevel level, Entity entity) {
-        Vec3 vec3 = entity.adjustSpawnLocation(level, level.getRespawnData().pos()).getBottomCenter();
+        //? if >= 26.2 {
+        Vec3 vec3 = Vec3.atBottomCenterOf(entity.adjustSpawnLocation(level, level.getRespawnData().pos()));
+        //? } else {
+        //Vec3 vec3 = entity.adjustSpawnLocation(level, level.getRespawnData().pos()).getBottomCenter();
+        //? }
         return new WorldLocation(level, new Location(vec3, Vec2.ZERO));
     }
 

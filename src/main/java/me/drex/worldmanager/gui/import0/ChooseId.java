@@ -39,7 +39,11 @@ public class ChooseId extends AnvilInputGui {
         Identifier id = Identifier.tryParse(input);
         if (id == null) {
             setSlot(2,
-                new GuiElementBuilder(Items.RED_STAINED_GLASS_PANE)
+                //? if >= 26.2 {
+                new GuiElementBuilder(Items.STAINED_GLASS_PANE.red())
+                //? } else {
+                //new GuiElementBuilder(Items.RED_STAINED_GLASS_PANE)
+                //? }
                     .setName(Component.literal("Invalid id!").withStyle(ChatFormatting.RED))
             );
             return;
@@ -49,13 +53,21 @@ public class ChooseId extends AnvilInputGui {
         ServerLevel level = player.level().getServer().getLevel(resourceKey);
         if (level != null) {
             setSlot(2,
-                new GuiElementBuilder(Items.RED_STAINED_GLASS_PANE)
+                //? if >= 26.2 {
+                new GuiElementBuilder(Items.STAINED_GLASS_PANE.red())
+                //? } else {
+                //new GuiElementBuilder(Items.RED_STAINED_GLASS_PANE)
+                //? }
                     .setName(Component.literal("World id is already taken!").withStyle(ChatFormatting.RED))
             );
             return;
         }
         setSlot(2,
-            new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? if >= 26.2 {
+            new GuiElementBuilder(Items.STAINED_GLASS_PANE.green())
+            //? } else {
+            //new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? }
                 .setName(Component.literal("Confirm!").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
                 .setCallback(() -> {
                     consumer.accept(id);

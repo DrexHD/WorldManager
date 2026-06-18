@@ -37,7 +37,11 @@ public class ImportWorlds extends PagedGui<Identifier> {
     @Override
     public GuiElementBuilder getNavigationBar(int index) {
         if (index > 0 && index < 8) {
-            GuiElementBuilder builder = new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? if >= 26.2 {
+            GuiElementBuilder builder = new GuiElementBuilder(Items.STAINED_GLASS_PANE.green())
+            //? } else {
+            //GuiElementBuilder builder = new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? }
                 .setName(Component.literal("Confirm").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
                 .setCallback(() -> {
                     close();
@@ -78,13 +82,21 @@ public class ImportWorlds extends PagedGui<Identifier> {
             });
         if (hasId) {
             builder
-                .setItem(Items.LIME_STAINED_GLASS_PANE)
+                //? if >= 26.2 {
+                .setItem(Items.STAINED_GLASS_PANE.lime())
+                //? } else {
+                //.setItem(Items.LIME_STAINED_GLASS_PANE)
+                //? }
                 .setName(Component.literal(id.toString()).withStyle(ChatFormatting.GREEN))
                 .addLoreLine(Component.literal("New world id: ").withStyle(ChatFormatting.GRAY).append(Component.literal(importWorldIds.get(id).toString()).withStyle(ChatFormatting.GOLD)))
                 .addLoreLine(Component.literal("Click to deselect world").withStyle(ChatFormatting.GRAY));
         } else {
             builder
-                .setItem(Items.YELLOW_STAINED_GLASS_PANE)
+                //? if >= 26.2 {
+                .setItem(Items.STAINED_GLASS_PANE.yellow())
+                //? } else {
+                //.setItem(Items.YELLOW_STAINED_GLASS_PANE)
+                //? }
                 .setName(Component.literal(id.toString()).withStyle(ChatFormatting.YELLOW))
                 .addLoreLine(Component.literal("Click to pick world id").withStyle(ChatFormatting.GRAY));
         }

@@ -94,7 +94,11 @@ public abstract class ConfigureWorld extends SimpleGui {
 
         for (int i = 2 * 9; i < 3 * 9; i++) {
             setSlot(i,
-                new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+                //? if >= 26.2 {
+                new GuiElementBuilder(Items.STAINED_GLASS_PANE.green())
+                //? } else {
+                //new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+                //? }
                     .setName(Component.literal("Confirm!").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
                     .setCallback(() -> {
                         WorldConfig config = new WorldConfig(

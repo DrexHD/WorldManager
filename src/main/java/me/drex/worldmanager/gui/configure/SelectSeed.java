@@ -17,7 +17,12 @@ public class SelectSeed extends AnvilInputGui {
         super(player, false);
         setTitle(Component.literal("Select World Seed"));
         setSlot(1, GuiElements.back(previousGui));
-        setSlot(2, new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+        setSlot(2,
+            //? if >= 26.2 {
+            new GuiElementBuilder(Items.STAINED_GLASS_PANE.green())
+            //? } else {
+            //new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? }
             .setName(Component.literal("Confirm!").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
             .setCallback(() -> {
                 String input = getInput();

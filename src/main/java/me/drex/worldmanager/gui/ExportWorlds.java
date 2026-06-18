@@ -29,7 +29,11 @@ public class ExportWorlds extends PagedGui<ExportWorlds.Entry> {
     @Override
     public GuiElementBuilder getNavigationBar(int index) {
         if (index > 0 && index < 8) {
-            return new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? if >= 26.2 {
+            return new GuiElementBuilder(Items.STAINED_GLASS_PANE.green())
+            //? } else {
+            //return new GuiElementBuilder(Items.GREEN_STAINED_GLASS_PANE)
+            //? }
                 .setName(Component.literal("Confirm").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
                 .setCallback(() -> {
                     close();
