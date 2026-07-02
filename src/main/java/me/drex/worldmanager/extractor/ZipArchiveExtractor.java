@@ -40,6 +40,10 @@ public class ZipArchiveExtractor implements ArchiveExtractor {
                     Path parent = path.getParent();
                     if (parent != null) root = parent;
                 }
+            } else if (path.getFileName().toString().equals(WORLD_GEN_SETTINGS)) {
+                try (var is = zipFile.getInputStream(zipEntry)) {
+                    configs = parseWorldGenSettings(is, server);
+                }
                 break;
             }
         }

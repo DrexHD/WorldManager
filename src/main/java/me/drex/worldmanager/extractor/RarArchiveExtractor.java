@@ -47,7 +47,11 @@ public class RarArchiveExtractor implements ArchiveExtractor {
                     try (var is = archive.getInputStream(fileHeader)) {
                         configs = parseWorldConfig(is, server);
                     }
-                    break;
+                } else if (path.getFileName().toString().equals(WORLD_GEN_SETTINGS)) {
+                    try (var is = archive.getInputStream(fileHeader)) {
+                        configs = parseWorldGenSettings(is, server);
+                        break;
+                    }
                 }
             }
         } catch (RarException e) {

@@ -15,6 +15,8 @@ import java.util.Map;
 import static me.drex.worldmanager.command.ImportCommand.DIMENSION_PREFIXES;
 
 public interface ArchiveExtractor {
+    String WORLD_GEN_SETTINGS = "world_gen_settings.dat";
+
     boolean supports(Path path);
 
     // TODO support reading world configs from datapacks

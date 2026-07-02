@@ -48,6 +48,8 @@ public class TarGzArchiveExtractor implements ArchiveExtractor {
                     if (parent != null) root = parent;
 
                     configs = parseWorldConfig(tarIn, server);
+                } else if (entryPath.getFileName().toString().equals(WORLD_GEN_SETTINGS)) {
+                    configs = parseWorldGenSettings(tarIn, server);
                     break;
                 }
             }

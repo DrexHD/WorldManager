@@ -7,13 +7,10 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.datafixers.DataFixer;
-import com.mojang.serialization.Dynamic;
 import me.drex.worldmanager.WorldManager;
 import me.drex.worldmanager.extractor.*;
 import me.drex.worldmanager.gui.import0.ImportWorlds;
 import me.drex.worldmanager.mixin.MinecraftServerAccessor;
-import me.drex.worldmanager.save.Location;
 import me.drex.worldmanager.save.WorldConfig;
 import me.drex.worldmanager.save.WorldData;
 import me.drex.worldmanager.save.WorldManagerSavedData;
@@ -30,12 +27,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.datafix.DataFixTypes;
-import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
 import org.apache.commons.io.FilenameUtils;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeLevelHandle;
@@ -162,13 +155,8 @@ public class ImportCommand {
 
         Optional<CompoundTag> unfixedData = tag.getCompound("Data");
         if (unfixedData.isEmpty()) return Collections.emptyMap();
-//        CompoundTag data = fixLevelData(unfixedData.get()).orElse(unfixedData.get());
         CompoundTag data = unfixedData.get();
 
-        var spawnX = data.getIntOr("SpawnX", 0);
-        var spawnY = data.getIntOr("SpawnY", 0);
-        var spawnZ = data.getIntOr("SpawnZ", 0);
-        var spawnAngle = data.getFloatOr("SpawnAngle", 0);
         return data.getCompound("WorldGenSettings")
             .flatMap(worldGenSettings -> {
                 long seed = worldGenSettings.getLongOr("seed", 0);
@@ -177,35 +165,41 @@ public class ImportCommand {
                         Stream<Map.Entry<Identifier, Optional<WorldConfig>>> stream = compoundTag.entrySet().stream().map(stringTagEntry -> {
                             String dimensionKey = stringTagEntry.getKey();
                             Identifier id = Identifier.tryParse(dimensionKey);
-                            return Map.entry(id, createWorldConfig(server, stringTagEntry.getValue(), spawnX, spawnY, spawnZ, spawnAngle, seed));
+                            return Map.entry(id, createWorldConfig(server, stringTagEntry.getValue(), seed));
                         }).filter(entry -> entry.getKey() != null && entry.getValue().isPresent());
                         return stream.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElseThrow()));
                     });
             }).orElse(Collections.emptyMap());
     }
 
-    public static Optional<CompoundTag> fixLevelData(CompoundTag levelData) {
-        int dataVersion = NbtUtils.getDataVersion(levelData, -1);
-        DataFixer dataFixer = DataFixers.getDataFixer();
-
-        Dynamic<Tag> dynamic = DataFixTypes.LEVEL.updateToCurrentVersion(dataFixer, new Dynamic<>(NbtOps.INSTANCE, levelData), dataVersion)
-            .update("Player", playerDynamic ->
-                DataFixTypes.PLAYER.updateToCurrentVersion(dataFixer, playerDynamic, dataVersion))
-            .update("WorldGenSettings", worldGenDynamic ->
-                DataFixTypes.WORLD_GEN_SETTINGS.updateToCurrentVersion(dataFixer, worldGenDynamic, dataVersion));
-
-        return dynamic.getValue() instanceof CompoundTag compoundTag ?
-            Optional.of(compoundTag) :
-            Optional.empty();
+    public static Map<Identifier, WorldConfig> parseWorldGenSettings(InputStream is, MinecraftServer server) throws IOException {
+        CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
+        Optional<CompoundTag> unfixedData = tag.getCompound("data");
+        if (unfixedData.isEmpty()) return Collections.emptyMap();
+        CompoundTag data = unfixedData.get();
+        return parseWorldGenSettings(data, server);
     }
 
-    private static Optional<WorldConfig> createWorldConfig(MinecraftServer server, Tag overworld, int spawnX, int spawnY, int spawnZ, float spawnAngle, long seed) {
+    private static Map<Identifier, WorldConfig> parseWorldGenSettings(CompoundTag worldGenSettings, MinecraftServer server) {
+        long seed = worldGenSettings.getLongOr("seed", 0);
+        return worldGenSettings.getCompound("dimensions")
+            .map(compoundTag -> {
+                Stream<Map.Entry<Identifier, Optional<WorldConfig>>> stream = compoundTag.entrySet().stream().map(stringTagEntry -> {
+                    String dimensionKey = stringTagEntry.getKey();
+                    Identifier id = Identifier.tryParse(dimensionKey);
+                    return Map.entry(id, createWorldConfig(server, stringTagEntry.getValue(), seed));
+                }).filter(entry -> entry.getKey() != null && entry.getValue().isPresent());
+                return stream.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElseThrow()));
+            }).orElse(Collections.emptyMap());
+    }
+
+    private static Optional<WorldConfig> createWorldConfig(MinecraftServer server, Tag overworld, long seed) {
         try {
             WorldConfig config = WorldConfig.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, server.registryAccess()), overworld)
                 .getOrThrow(IllegalStateException::new)
                 .getFirst();
             WorldData worldData = new WorldData();
-            worldData.spawnLocation = Optional.of(new Location(new Vec3(spawnX, spawnY, spawnZ), new Vec2(spawnAngle, 0)));
+            worldData.spawnLocation = Optional.empty();
             config.seed = seed;
             config.data = worldData;
             return Optional.of(config);

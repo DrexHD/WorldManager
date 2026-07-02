@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-07-02
+### Added
+- Support for importing 26.1+ worlds
+
 ## [1.4.4] - 2026-03-16
 ### Changed
 - Inherit difficulty and gamerules from overworld

@@ -35,6 +35,12 @@ public class FolderArchiveExtractor implements ArchiveExtractor {
                 configs = parseWorldConfig(Files.newInputStream(first.get()), server);
             }
         }
+        try (Stream<Path> pathStream = Files.find(folderPath, 10, (path, _) -> path.getFileName().toString().equals(WORLD_GEN_SETTINGS))) {
+            Optional<Path> first = pathStream.findFirst();
+            if (first.isPresent()) {
+                configs = parseWorldGenSettings(Files.newInputStream(first.get()), server);
+            }
+        }
         return configs;
     }
 
