@@ -46,6 +46,8 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 public class ExportCommand {
+    private static final int DATA_VERSION_26_1 = 4786;
+
     public static LiteralArgumentBuilder<CommandSourceStack> build() {
         return literal("export")
             .requires(Permissions.require("worldmanager.command.worldmanager.export", 4))
@@ -146,13 +148,29 @@ public class ExportCommand {
             out.write(packMcMeta.toString().getBytes());
             out.closeEntry();
 
+            int dataVersion = SharedConstants.getCurrentVersion().dataVersion().version();
+            // 26.1 introduced world_gen_settings.dat, which stores the world gen settings, which were previously
+            // stored in level.dat
+            boolean usesWorldGenSettings = dataVersion >= DATA_VERSION_26_1;
+
             // level.dat
             ZipEntry levelDatEntry = new ZipEntry("level.dat");
             out.putNextEntry(levelDatEntry);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(writeLevelDat(dimensionsTag), baos);
+            NbtIo.writeCompressed(writeLevelDat(dimensionsTag, usesWorldGenSettings), baos);
             out.write(baos.toByteArray());
             out.closeEntry();
+
+
+            if (usesWorldGenSettings) {
+                // world_gen_settings.dat
+                ZipEntry worldGenSettingsEntry = new ZipEntry("data/minecraft/world_gen_settings.dat");
+                out.putNextEntry(worldGenSettingsEntry);
+                baos = new ByteArrayOutputStream();
+                NbtIo.writeCompressed(writeWorldGenSettingsDat(dimensionsTag), baos);
+                out.write(baos.toByteArray());
+                out.closeEntry();
+            }
 
             out.close();
         } catch (IOException e) {
@@ -163,7 +181,7 @@ public class ExportCommand {
         return 1;
     }
 
-    private static CompoundTag writeLevelDat(CompoundTag dimensionsTag) {
+    private static CompoundTag writeLevelDat(CompoundTag dimensionsTag, boolean usesWorldGenSettings) {
         CompoundTag root = new CompoundTag();
         CompoundTag data = new CompoundTag();
 
@@ -179,11 +197,21 @@ public class ExportCommand {
         data.put("Version", versionTag);
         data.putInt("version", net.minecraft.world.level.storage.WorldData.ANVIL_VERSION_ID);
 
-        CompoundTag worldGenSettingsTag = new CompoundTag();
-        worldGenSettingsTag.put("dimensions", dimensionsTag);
+        if (!usesWorldGenSettings) {
+            CompoundTag worldGenSettingsTag = new CompoundTag();
+            worldGenSettingsTag.put("dimensions", dimensionsTag);
+            data.put("WorldGenSettings", worldGenSettingsTag);
+        }
 
-        data.put("WorldGenSettings", worldGenSettingsTag);
         root.put("Data", data);
+        return root;
+    }
+
+    private static CompoundTag writeWorldGenSettingsDat(CompoundTag dimensionsTag) {
+        CompoundTag root = new CompoundTag();
+        CompoundTag data = new CompoundTag();
+        data.put("dimensions", dimensionsTag);
+        root.put("data", data);
         return root;
     }
 

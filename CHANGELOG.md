@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-07-13
 ### Changed
 - Refactored archive extractors
+- Improve world exports on 26.1+ worlds
 
 ## [1.5.0] - 2026-07-02
 ### Added
