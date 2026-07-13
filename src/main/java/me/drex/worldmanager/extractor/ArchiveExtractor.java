@@ -10,21 +10,47 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Map;
 
-import static me.drex.worldmanager.command.ImportCommand.DIMENSION_PREFIXES;
+import static me.drex.worldmanager.command.ImportCommand.*;
 
-public interface ArchiveExtractor {
-    String WORLD_GEN_SETTINGS = "world_gen_settings.dat";
+public abstract class ArchiveExtractor {
+    Path root = Path.of(".");
+    private Map<Identifier, WorldConfig> worldConfigs = Collections.emptyMap();
 
-    boolean supports(Path path);
+    // When world_gen_settings.dat is present, it has priority over level.dat
+    private boolean parsedWorldGenSettings = false;
+
+    public abstract boolean supports(Path path);
 
     // TODO support reading world configs from datapacks
-    Map<Identifier, WorldConfig> open(Path archive, MinecraftServer server) throws IOException, CommandSyntaxException;
+    public abstract void open(Path archive, MinecraftServer server) throws IOException, CommandSyntaxException;
 
-    void extract(Path relativeSourcePath, Path targetRootPath, MinecraftServer server) throws IOException;
+    public void readFile(Path path, IOSupplier<InputStream> inputStreamSupplier, MinecraftServer server) throws IOException {
+        String fileName = path.getFileName().toString();
+        switch (fileName) {
+            case "level.dat" -> {
+                Path parent = path.getParent();
+                if (parent != null) root = parent;
+                if (!parsedWorldGenSettings) {
+                    worldConfigs = parseLevelDat(inputStreamSupplier.get(), server);
+                }
+            }
+            case "world_gen_settings.dat" -> {
+                worldConfigs = parseWorldGenSettings(inputStreamSupplier.get(), server);
+                parsedWorldGenSettings = true;
+            }
+        }
+    }
 
-    void close() throws IOException;
+    public abstract void extract(Path relativeSourcePath, Path targetRootPath, MinecraftServer server) throws IOException;
+
+    public abstract void close() throws IOException;
+
+    public Map<Identifier, WorldConfig> worldConfigs() {
+        return worldConfigs;
+    }
 
     static void extractFile(Path relativeSourcePath, Path targetRootPath, Path relativeToRoot, boolean directory, InputStream inputStream) throws IOException {
         if (!relativeToRoot.toString().startsWith(relativeSourcePath.toString())) return;
@@ -41,5 +67,10 @@ public interface ArchiveExtractor {
             Files.createDirectories(resolvedPath.getParent());
             Files.copy(inputStream, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    @FunctionalInterface
+    public interface IOSupplier<T> {
+        T get() throws IOException;
     }
 }

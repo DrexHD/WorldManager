@@ -1,22 +1,13 @@
 package me.drex.worldmanager.extractor;
 
-import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import static me.drex.worldmanager.command.ImportCommand.*;
-import static net.minecraft.world.level.storage.LevelResource.LEVEL_DATA_FILE;
-
-public class FolderArchiveExtractor implements ArchiveExtractor {
-    private Path root = Path.of(".");
+public class FolderArchiveExtractor extends ArchiveExtractor {
 
     @Override
     public boolean supports(Path path) {
@@ -24,24 +15,12 @@ public class FolderArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<Identifier, WorldConfig> open(Path folderPath, MinecraftServer server) throws IOException {
-        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
-        try (Stream<Path> pathStream = Files.find(folderPath, 10, (path, _) -> path.getFileName().toString().equals(LEVEL_DATA_FILE.id()))) {
-            Optional<Path> first = pathStream.findFirst();
-            if (first.isPresent()) {
-                Path parent = first.get().getParent();
-                if (parent != null) root = parent;
-
-                configs = parseWorldConfig(Files.newInputStream(first.get()), server);
+    public void open(Path folderPath, MinecraftServer server) throws IOException {
+        try (Stream<Path> pathStream = Files.walk(folderPath)) {
+            for (Path path : pathStream.toList()) {
+                readFile(path, () -> Files.newInputStream(path), server);
             }
         }
-        try (Stream<Path> pathStream = Files.find(folderPath, 10, (path, _) -> path.getFileName().toString().equals(WORLD_GEN_SETTINGS))) {
-            Optional<Path> first = pathStream.findFirst();
-            if (first.isPresent()) {
-                configs = parseWorldGenSettings(Files.newInputStream(first.get()), server);
-            }
-        }
-        return configs;
     }
 
     @Override

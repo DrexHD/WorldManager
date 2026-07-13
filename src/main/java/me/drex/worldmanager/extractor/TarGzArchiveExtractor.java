@@ -1,8 +1,6 @@
 package me.drex.worldmanager.extractor;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -15,14 +13,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Map;
 
-import static me.drex.worldmanager.command.ImportCommand.*;
-import static net.minecraft.world.level.storage.LevelResource.LEVEL_DATA_FILE;
-
-public class TarGzArchiveExtractor implements ArchiveExtractor {
-    private Path root = Path.of(".");
+public class TarGzArchiveExtractor extends ArchiveExtractor {
     private Path tarGzPath;
 
     @Override
@@ -32,9 +24,8 @@ public class TarGzArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<Identifier, WorldConfig> open(Path tarGzPath, MinecraftServer server) throws IOException, CommandSyntaxException {
+    public void open(Path tarGzPath, MinecraftServer server) throws IOException, CommandSyntaxException {
         this.tarGzPath = tarGzPath;
-        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
         try (InputStream fi = Files.newInputStream(tarGzPath);
              InputStream bi = new BufferedInputStream(fi);
              InputStream gzi = new GzipCompressorInputStream(bi);
@@ -43,18 +34,9 @@ public class TarGzArchiveExtractor implements ArchiveExtractor {
             TarArchiveEntry entry;
             while ((entry = tarIn.getNextEntry()) != null) {
                 Path entryPath = Paths.get(entry.getName());
-                if (entryPath.getFileName().toString().equals(LEVEL_DATA_FILE.id())) {
-                    Path parent = entryPath.getParent();
-                    if (parent != null) root = parent;
-
-                    configs = parseWorldConfig(tarIn, server);
-                } else if (entryPath.getFileName().toString().equals(WORLD_GEN_SETTINGS)) {
-                    configs = parseWorldGenSettings(tarIn, server);
-                    break;
-                }
+                readFile(entryPath, () -> tarIn, server);
             }
         }
-        return configs;
     }
 
     @Override

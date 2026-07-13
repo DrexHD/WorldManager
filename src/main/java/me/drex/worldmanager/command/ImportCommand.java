@@ -90,7 +90,7 @@ public class ImportCommand {
         ServerPlayer player = source.getPlayerOrException();
 
         Path fullPath = FabricLoader.getInstance().getGameDir().resolve(localPath);
-        Map<Identifier, WorldConfig> worldConfigs;
+
         try {
             Optional<ArchiveExtractor> extractor = EXTRACTORS.stream()
                 .filter(e -> e.supports(fullPath))
@@ -99,10 +99,12 @@ public class ImportCommand {
                 throw UNKNOWN_EXTENSION.create(fullPath, FilenameUtils.getExtension(fullPath.toString()));
             }
 
-            worldConfigs = extractor.get().open(fullPath, server);
+            ArchiveExtractor archiveExtractor = extractor.get();
+            archiveExtractor.open(fullPath, server);
+            Map<Identifier, WorldConfig> worldConfigs = archiveExtractor.worldConfigs();
             if (worldConfigs.isEmpty()) throw MISSING_LEVEL_DAT.create(fullPath);
 
-            new ImportWorlds(player, worldConfigs, extractor.get()).open();
+            new ImportWorlds(player, worldConfigs, archiveExtractor).open();
             return 1;
         } catch (IOException e) {
             WorldManager.LOGGER.error("Failed to open world archive", e);
@@ -150,7 +152,7 @@ public class ImportCommand {
         return 1;
     }
 
-    public static Map<Identifier, WorldConfig> parseWorldConfig(InputStream is, MinecraftServer server) throws IOException {
+    public static Map<Identifier, WorldConfig> parseLevelDat(InputStream is, MinecraftServer server) throws IOException {
         CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
 
         Optional<CompoundTag> unfixedData = tag.getCompound("Data");

@@ -1,7 +1,5 @@
 package me.drex.worldmanager.extractor;
 
-import me.drex.worldmanager.save.WorldConfig;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FilenameUtils;
 
@@ -12,12 +10,7 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static me.drex.worldmanager.command.ImportCommand.*;
-import static net.minecraft.world.level.storage.LevelResource.LEVEL_DATA_FILE;
-
-public class ZipArchiveExtractor implements ArchiveExtractor {
-
-    private Path root = Path.of(".");
+public class ZipArchiveExtractor extends ArchiveExtractor {
     private ZipFile zipFile;
 
     @Override
@@ -27,27 +20,14 @@ public class ZipArchiveExtractor implements ArchiveExtractor {
     }
 
     @Override
-    public Map<Identifier, WorldConfig> open(Path zipPath, MinecraftServer server) throws IOException {
-        Map<Identifier, WorldConfig> configs = Collections.emptyMap();
+    public void open(Path zipPath, MinecraftServer server) throws IOException {
         zipFile = new ZipFile(zipPath.toFile());
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
             ZipEntry zipEntry = entries.nextElement();
             Path path = Path.of(zipEntry.getName());
-            if (path.getFileName().toString().equals(LEVEL_DATA_FILE.id())) {
-                try (var is = zipFile.getInputStream(zipEntry)) {
-                    configs = parseWorldConfig(is, server);
-                    Path parent = path.getParent();
-                    if (parent != null) root = parent;
-                }
-            } else if (path.getFileName().toString().equals(WORLD_GEN_SETTINGS)) {
-                try (var is = zipFile.getInputStream(zipEntry)) {
-                    configs = parseWorldGenSettings(is, server);
-                }
-                break;
-            }
+            readFile(path, () -> zipFile.getInputStream(zipEntry), server);
         }
-        return configs;
     }
 
     @Override

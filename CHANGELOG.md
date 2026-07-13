@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Refactored archive extractors
+
 ## [1.5.0] - 2026-07-02
 ### Added
 - Support for importing 26.1+ worlds
