@@ -8,7 +8,6 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import xyz.nucleoid.fantasy.RuntimeLevelConfig;
 
-// TODO Save world time
 public final class WorldConfig {
 
     public static final Codec<WorldConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -39,6 +38,7 @@ public final class WorldConfig {
             .setSeed(seed)
             .setMirrorOverworldGameRules(true)
             .setMirrorOverworldDifficulty(true)
+            .setClockManagerConstructor(data.clocks)
             .setShouldTickTime(tickTime);
     }
 }
