@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.clock.PackedClockStates;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -17,16 +18,19 @@ public class WorldData {
     public Optional<Location> spawnLocation = Optional.empty();
     public ItemStack icon = ItemStack.EMPTY;
     public Map<Identifier, Identifier> portals = new HashMap<>();
+    public PackedClockStates clocks = PackedClockStates.EMPTY;
 
     public static final Codec<WorldData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Location.CODEC.optionalFieldOf("spawn_location").forGetter(worldData -> worldData.spawnLocation),
         ItemStack.CODEC.optionalFieldOf("icon", ItemStack.EMPTY).forGetter(worldData -> worldData.icon),
-        Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("portals", Collections.emptyMap()).forGetter(worldData -> worldData.portals)
-    ).apply(instance, instance.stable((location, icon, portals) -> {
+        Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("portals", Collections.emptyMap()).forGetter(worldData -> worldData.portals),
+        PackedClockStates.CODEC.optionalFieldOf("clocks", PackedClockStates.EMPTY).forGetter(worldData -> worldData.clocks)
+    ).apply(instance, instance.stable((location, icon, portals, clocks) -> {
         WorldData data = new WorldData();
         data.spawnLocation = location;
         data.icon = icon;
         data.portals = new HashMap<>(portals);
+        data.clocks = clocks;
         return data;
     })));
 

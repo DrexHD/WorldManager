@@ -48,6 +48,17 @@ public class WorldManagerSavedData extends SavedData {
         });
     }
 
+    public void saveWorlds() {
+        worldHandles.forEach((id, handle) -> {
+            WorldData data = worlds.get(id).data;
+            var clocks = handle.asLevel().clockManager().packState();
+            if (!clocks.equals(data.clocks)) {
+                data.clocks = clocks;
+                setDirty();
+            }
+        });
+    }
+
     public void addWorld(Identifier id, WorldConfig config, RuntimeLevelHandle handle) {
         worlds.put(id, config);
         worldHandles.put(id, handle);

@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
@@ -14,5 +15,11 @@ public abstract class MinecraftServerMixin {
         var this_ = (MinecraftServer) (Object) this;
         WorldManagerSavedData savedData = WorldManagerSavedData.getSavedData(this_);
         savedData.loadWorlds(this_);
+    }
+
+    @Inject(method = "saveAllChunks", at = @At("HEAD"))
+    public void saveCustomLevels(CallbackInfoReturnable<Boolean> cir) {
+        var this_ = (MinecraftServer) (Object) this;
+        WorldManagerSavedData.getSavedData(this_).saveWorlds();
     }
 }
